@@ -1,0 +1,64 @@
+{
+    "name": "ekata-gateway-processor-client-frontend",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@datapunt/matomo-tracker-react": "^0.5.1",
+        "@emotion/react": "^11.5.0",
+        "@emotion/styled": "^11.3.0",
+        "@mui/material": "^5.0.6",
+        "@mui/x-data-grid": "^5.0.1",
+        "@reduxjs/toolkit": "^1.6.2",
+        "@sentry/react": "^6.15.0",
+        "@sentry/tracing": "^6.15.0",
+        "@testing-library/jest-dom": "^5.11.4",
+        "@testing-library/react": "^11.1.0",
+        "@testing-library/user-event": "^12.1.10",
+        "@types/jest": "^26.0.15",
+        "@types/lodash": "^4.14.176",
+        "@types/node": "^12.0.0",
+        "@types/qs": "^6.9.7",
+        "@types/react": "^17.0.0",
+        "@types/react-copy-to-clipboard": "^5.0.2",
+        "@types/react-dom": "^17.0.0",
+        "apisauce": "^2.1.2",
+        "date-fns": "^2.25.0",
+        "history": "5",
+        "jwt-decode": "^3.1.2",
+        "lodash": "^4.17.21",
+        "qs": "^6.10.1",
+        "react": "^17.0.2",
+        "react-copy-to-clipboard": "^5.0.4",
+        "react-dom": "^17.0.2",
+        "react-redux": "^7.2.6",
+        "react-router-dom": "6",
+        "react-scripts": "4.0.3",
+        "redux-persist": "^6.0.0",
+        "typescript": "^4.1.2",
+        "web-vitals": "^1.0.1"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "react-app/jest"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
+}
