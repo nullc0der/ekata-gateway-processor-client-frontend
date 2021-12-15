@@ -1,1 +1,1 @@
-export const ALLOWED_CURRENCY = ['bitcoin', 'monero', 'dogecoin']
+export const ALLOWED_CURRENCY = ['bitcoin', 'dogecoin']
