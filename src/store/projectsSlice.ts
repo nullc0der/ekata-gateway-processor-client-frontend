@@ -22,6 +22,24 @@ const initialState: ProjectState = {
     projectStats: { active_project: 0, total_project: 0, verified_domain: 0 },
 }
 
+const increaseOrDecreaseActiveProject = (
+    newState: ProjectData,
+    editedProject?: ProjectData
+) => {
+    if (newState?.enabled_currency && newState?.enabled_currency?.length) {
+        if (
+            editedProject?.enabled_currency ||
+            editedProject?.enabled_currency?.length
+        ) {
+            return 0
+        } else {
+            return 1
+        }
+    } else {
+        return -1
+    }
+}
+
 const projectsSlice = createSlice({
     name: 'projects',
     initialState,
@@ -42,16 +60,20 @@ const projectsSlice = createSlice({
             }
         },
         editProject: (state, action: PayloadAction<ProjectData>) => {
+            const editedProject = find(state.projects, {
+                id: action.payload.id,
+            })
             state.projects = state.projects.map((x) =>
                 x.id === action.payload.id ? action.payload : x
             )
             state.projectStats = {
                 ...state.projectStats,
                 active_project:
-                    action.payload.enabled_currency &&
-                    action.payload.enabled_currency.length
-                        ? state.projectStats.active_project + 1
-                        : state.projectStats.active_project,
+                    state.projectStats.active_project +
+                    increaseOrDecreaseActiveProject(
+                        action.payload,
+                        editedProject
+                    ),
             }
         },
         deleteProject: (state, action: PayloadAction<string>) => {
