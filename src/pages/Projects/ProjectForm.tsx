@@ -215,29 +215,36 @@ const ProjectForm = ({
                     helperText={formError.webhook_url}
                     onChange={handleInputChange}
                 />
-                <FormGroup sx={{ mt: 1 }}>
-                    <FormLabel component="legend">Enabled Currency</FormLabel>
-                    {payoutAddresses.map((x, i) => (
-                        <FormControlLabel
-                            key={i}
-                            control={
-                                <Switch
-                                    checked={
-                                        formData.enabled_currency
-                                            ? formData.enabled_currency?.indexOf(
-                                                  x.currency_name
-                                              ) > -1
-                                            : false
-                                    }
-                                    onChange={(e) =>
-                                        handleSelectChange(e, x.currency_name)
-                                    }
-                                />
-                            }
-                            label={x.currency_name}
-                        />
-                    ))}
-                </FormGroup>
+                {!!payoutAddresses && (
+                    <FormGroup sx={{ mt: 1 }}>
+                        <FormLabel component="legend">
+                            Enabled Currency
+                        </FormLabel>
+                        {payoutAddresses.map((x, i) => (
+                            <FormControlLabel
+                                key={i}
+                                control={
+                                    <Switch
+                                        checked={
+                                            formData.enabled_currency
+                                                ? formData.enabled_currency?.indexOf(
+                                                      x.currency_name
+                                                  ) > -1
+                                                : false
+                                        }
+                                        onChange={(e) =>
+                                            handleSelectChange(
+                                                e,
+                                                x.currency_name
+                                            )
+                                        }
+                                    />
+                                }
+                                label={x.currency_name}
+                            />
+                        ))}
+                    </FormGroup>
+                )}
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" onClick={onClose}>
