@@ -4,6 +4,8 @@ import {
     DialogTitle,
     Typography,
     Stack,
+    Icon,
+    IconButton,
 } from '@mui/material'
 
 import CopyToClipboard from 'components/CopyToClipboard'
@@ -22,8 +24,15 @@ const ApiKeyDialog = ({
     onClose,
 }: ApiKeyDialogProps) => {
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="lg">
-            <DialogTitle>Key(s) for your project is created</DialogTitle>
+        <Dialog open={open} maxWidth="lg">
+            <DialogTitle>
+                Key(s) for your project is created
+                <IconButton
+                    sx={{ position: 'absolute', right: '0', top: '0' }}
+                    onClick={onClose}>
+                    <Icon>cancel</Icon>
+                </IconButton>
+            </DialogTitle>
             <DialogContent>
                 <Typography variant="body2">
                     Copy the following key(s) and keep it somewhere safe, once
