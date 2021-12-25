@@ -117,9 +117,15 @@ const Payouts = () => {
                                                 {payoutData.tx_ids}
                                             </TableCell>
                                             <TableCell>
-                                                {
-                                                    payoutData.payout_processed_for_payments
-                                                }
+                                                {payoutData.payout_processed_for_payments.map(
+                                                    (x, i) => (
+                                                        <Typography
+                                                            key={i}
+                                                            variant="body2">
+                                                            {x}
+                                                        </Typography>
+                                                    )
+                                                )}
                                             </TableCell>
                                             <TableCell>
                                                 {format(
