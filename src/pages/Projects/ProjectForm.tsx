@@ -215,7 +215,7 @@ const ProjectForm = ({
                     helperText={formError.webhook_url}
                     onChange={handleInputChange}
                 />
-                {!!payoutAddresses && (
+                {!!payoutAddresses.length && (
                     <FormGroup sx={{ mt: 1 }}>
                         <FormLabel component="legend">
                             Enabled Currency
