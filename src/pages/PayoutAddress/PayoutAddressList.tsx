@@ -10,6 +10,7 @@ import {
 
 import BasicCard from 'components/BasicCard'
 import { PayoutAddressData } from 'store/payoutAddressSlice'
+import { ALLOWED_CURRENCY } from 'appconstants'
 
 interface PayoutAddressListProps {
     payoutAddresses: PayoutAddressData[]
@@ -53,7 +54,7 @@ const PayoutAddressList = ({
                         </ListItem>
                     ))}
                 </List>
-                {!!(payoutAddresses.length < 3) && (
+                {!!(payoutAddresses.length < ALLOWED_CURRENCY.length) && (
                     <Grid container justifyContent="center">
                         <Grid item xs={6}>
                             <Button
