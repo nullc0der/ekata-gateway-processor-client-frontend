@@ -7,6 +7,7 @@ const prefix = '/client/projects'
 export interface ProjectFormData {
     name: string
     domain_name: string
+    is_non_profit?: boolean
     enabled_currency?: string[]
     webhook_url?: string
 }

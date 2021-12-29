@@ -7,13 +7,11 @@ import {
     Chip,
     Button,
     Icon,
-    Tooltip,
     IconButton,
     Dialog,
     DialogContent,
     DialogContentText,
     DialogActions,
-    ClickAwayListener,
     Menu,
     MenuItem,
 } from '@mui/material'
@@ -22,6 +20,7 @@ import { format } from 'date-fns'
 import { ProjectData } from 'store/projectsSlice'
 import BasicCard from 'components/BasicCard'
 import CopyToClipboard from 'components/CopyToClipboard'
+import HelpTooltip from 'components/HelpTooltip'
 
 interface ProjectDetailsProps {
     selectedProject?: ProjectData
@@ -78,8 +77,6 @@ const ProjectDetails = ({
     const hasEnabledCurrency = selectedProject?.enabled_currency?.length
     const [showDeleteProjectDialog, setShowDeleteProjectDialog] =
         useState(false)
-    const [showEnableCurrencyTooltip, setShowEnableCurrencyTooltip] =
-        useState(false)
     const [actionMenuAnchorEl, setActionMenuAnchorEl] =
         useState<null | HTMLElement>(null)
     const actionMenuOpen = Boolean(actionMenuAnchorEl)
@@ -128,6 +125,15 @@ const ProjectDetails = ({
                         right: '-10px',
                         alignItems: 'center',
                     }}>
+                    {selectedProject.is_non_profit && (
+                        <Chip
+                            label="Non Profit Project"
+                            color="success"
+                            size="small"
+                            variant="outlined"
+                            sx={{ mr: 1 }}
+                        />
+                    )}
                     <Chip
                         label={hasEnabledCurrency ? 'Active' : 'Inactive'}
                         color={hasEnabledCurrency ? 'success' : 'warning'}
@@ -135,28 +141,7 @@ const ProjectDetails = ({
                         variant="outlined"
                     />
                     {!hasEnabledCurrency && (
-                        <ClickAwayListener
-                            onClickAway={() =>
-                                setShowEnableCurrencyTooltip(false)
-                            }>
-                            <Tooltip
-                                disableFocusListener
-                                disableHoverListener
-                                disableTouchListener
-                                open={showEnableCurrencyTooltip}
-                                onClose={() =>
-                                    setShowEnableCurrencyTooltip(false)
-                                }
-                                title="You need to enable currency to activate a project"
-                                arrow>
-                                <IconButton
-                                    onClick={() =>
-                                        setShowEnableCurrencyTooltip(true)
-                                    }>
-                                    <Icon color="warning">help_outline</Icon>
-                                </IconButton>
-                            </Tooltip>
-                        </ClickAwayListener>
+                        <HelpTooltip title="You need to enable currency to activate a project" />
                     )}
                 </Stack>
                 <Typography variant="h6" textAlign="center">

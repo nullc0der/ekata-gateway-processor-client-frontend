@@ -8,6 +8,7 @@ export interface ProjectData {
     name: string
     domain_name: string
     date_created: string
+    is_non_profit?: boolean
     enabled_currency?: string[]
     webhook_url?: string
 }

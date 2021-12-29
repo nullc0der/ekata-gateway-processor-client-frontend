@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Button,
     Dialog,
@@ -20,6 +20,7 @@ import {
     ProjectFormData,
     updateProject,
 } from 'api/project'
+import HelpTooltip from 'components/HelpTooltip'
 import { ProjectData, addProject, editProject } from 'store/projectsSlice'
 import { updateSnackBar } from 'store/snackBarSlice'
 import { PayoutAddressData } from 'store/payoutAddressSlice'
@@ -44,6 +45,7 @@ const initialFormData = {
     name: '',
     domain_name: '',
     webhook_url: '',
+    is_non_profit: false,
     enabled_currency: [],
 }
 
@@ -52,6 +54,7 @@ const initialFormError = {
     domain_name: '',
     webhook_url: '',
     enabled_currency: '',
+    is_non_profit: '',
     other_error: '',
 }
 
@@ -70,7 +73,13 @@ const ProjectForm = ({
     useEffect(() => {
         if (type === 'update') {
             if (projectData) {
-                setFormData(projectData)
+                setFormData({
+                    name: projectData.name,
+                    domain_name: projectData.domain_name,
+                    webhook_url: projectData.webhook_url,
+                    is_non_profit: projectData.is_non_profit,
+                    enabled_currency: projectData.enabled_currency,
+                })
             }
         }
         if (type === 'create') {
@@ -87,7 +96,7 @@ const ProjectForm = ({
         }))
     }
 
-    const handleSelectChange = (
+    const handleEnabledCurrencyChange = (
         event: React.ChangeEvent<HTMLInputElement>,
         value: string
     ) => {
@@ -98,6 +107,15 @@ const ProjectForm = ({
         setFormData((prevState) => ({
             ...prevState,
             enabled_currency,
+        }))
+    }
+
+    const handleIsNonProfitChange = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            is_non_profit: event.target.checked,
         }))
     }
 
@@ -160,7 +178,7 @@ const ProjectForm = ({
             keyof typeof submitData
         >
         submitDataKeys.forEach(
-            (key) => !submitData[key]?.length && delete submitData[key]
+            (key) => !submitData[key] && delete submitData[key]
         )
         if (type === 'create') {
             createProject(submitData).then((response) =>
@@ -215,6 +233,21 @@ const ProjectForm = ({
                     helperText={formError.webhook_url}
                     onChange={handleInputChange}
                 />
+                <FormGroup sx={{ mt: 1 }}>
+                    <FormLabel component="legend">
+                        Is it a Non Profit Project ?
+                        <HelpTooltip title="Enabling this will change all payment related text in payment form to donate" />
+                    </FormLabel>
+                    <FormControlLabel
+                        label="Non Profit Project"
+                        control={
+                            <Switch
+                                checked={formData.is_non_profit}
+                                onChange={handleIsNonProfitChange}
+                            />
+                        }
+                    />
+                </FormGroup>
                 {!!payoutAddresses.length && (
                     <FormGroup sx={{ mt: 1 }}>
                         <FormLabel component="legend">
@@ -233,7 +266,7 @@ const ProjectForm = ({
                                                 : false
                                         }
                                         onChange={(e) =>
-                                            handleSelectChange(
+                                            handleEnabledCurrencyChange(
                                                 e,
                                                 x.currency_name
                                             )
