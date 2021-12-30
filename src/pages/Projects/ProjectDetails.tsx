@@ -212,13 +212,17 @@ const ProjectDetails = ({
                         </Grid>
                     </Grid>
                 )}
-                <Stack direction="row" justifyContent="flex-end" spacing={1}>
+                <Stack
+                    direction="row"
+                    mt={3}
+                    justifyContent="flex-end"
+                    spacing={1}>
                     <Button
                         variant="contained"
                         color="success"
                         onClick={onClickUpdate}
-                        startIcon={<Icon>check</Icon>}>
-                        Update
+                        startIcon={<Icon>edit</Icon>}>
+                        Edit
                     </Button>
                     <IconButton
                         aria-label="delete"
