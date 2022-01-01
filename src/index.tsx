@@ -12,9 +12,17 @@ import { Integrations } from '@sentry/tracing'
 
 import { MatomoProvider, createInstance } from '@datapunt/matomo-tracker-react'
 
+import * as serviceWorkerRegistration from './serviceWorkerRegistration'
+
 import App from 'containers/App'
 import reportWebVitals from './reportWebVitals'
 import store, { persistor } from './store'
+
+import '@fontsource/roboto/300.css'
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/500.css'
+import '@fontsource/roboto/700.css'
+import '@fontsource/material-icons'
 
 if (process.env.NODE_ENV !== 'development') {
     Sentry.init({
@@ -53,3 +61,5 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals()
+
+serviceWorkerRegistration.register()

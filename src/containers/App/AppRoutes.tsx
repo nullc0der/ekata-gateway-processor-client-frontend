@@ -2,22 +2,56 @@ import React from 'react'
 
 import { Routes, Route } from 'react-router'
 
-const Dashboard = React.lazy(() => import('containers/Dashboard'))
-const Login = React.lazy(() => import('pages/Auth/Login'))
-const Register = React.lazy(() => import('pages/Auth/Register'))
-const ForgotPassword = React.lazy(() => import('pages/Auth/ForgotPassword'))
-const ResetPassword = React.lazy(() => import('pages/Auth/ResetPassword'))
-const VerifyEmail = React.lazy(() => import('pages/Auth/VerifyEmail'))
-const Projects = React.lazy(() => import('pages/Projects'))
-const NotFound = React.lazy(() => import('pages/NotFound'))
-const Profile = React.lazy(() => import('pages/Profile'))
-const PayoutAddress = React.lazy(() => import('pages/PayoutAddress'))
-const ProjectPayments = React.lazy(() => import('pages/ProjectPayments'))
-const Payouts = React.lazy(() => import('pages/Payouts'))
+import LoadingFallback from 'components/LoadingFallback'
 
-// TODO: Add nice loading screen
+const Dashboard = React.lazy(
+    () => import('containers/Dashboard' /* webpackChunkName: "Dashboard" */)
+)
+const Login = React.lazy(
+    () => import('pages/Auth/Login' /* webpackChunkName: "Login" */)
+)
+const Register = React.lazy(
+    () => import('pages/Auth/Register' /* webpackChunkName: "Register" */)
+)
+const ForgotPassword = React.lazy(
+    () =>
+        import(
+            'pages/Auth/ForgotPassword' /* webpackChunkName: "ForgotPassword" */
+        )
+)
+const ResetPassword = React.lazy(
+    () =>
+        import(
+            'pages/Auth/ResetPassword' /* webpackChunkName: "ResetPassword" */
+        )
+)
+const VerifyEmail = React.lazy(
+    () => import('pages/Auth/VerifyEmail' /* webpackChunkName: "VerifyEmail" */)
+)
+const Projects = React.lazy(
+    () => import('pages/Projects' /* webpackChunkName: "Projects" */)
+)
+const NotFound = React.lazy(
+    () => import('pages/NotFound' /* webpackChunkName: "NotFound" */)
+)
+const Profile = React.lazy(
+    () => import('pages/Profile' /* webpackChunkName: "Profile" */)
+)
+const PayoutAddress = React.lazy(
+    () => import('pages/PayoutAddress' /* webpackChunkName: "PayoutAddress" */)
+)
+const ProjectPayments = React.lazy(
+    () =>
+        import(
+            'pages/ProjectPayments' /* webpackChunkName: "ProjectPayments" */
+        )
+)
+const Payouts = React.lazy(
+    () => import('pages/Payouts' /* webpackChunkName: "Payouts" */)
+)
+
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
-    <React.Suspense fallback={<p>Loading...</p>}>{children}</React.Suspense>
+    <React.Suspense fallback={<LoadingFallback />}>{children}</React.Suspense>
 )
 
 const AppRoutes = () => {

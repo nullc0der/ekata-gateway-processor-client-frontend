@@ -31,6 +31,9 @@ const SideBar = ({ sidebarOpenMobile, setSidebarOpenMobile }: SideBarProps) => {
 
     const navigateTo = (link: string) => {
         navigate(link)
+        if (isSM) {
+            setSidebarOpenMobile(false)
+        }
     }
 
     const drawerItem = (
