@@ -1,6 +1,6 @@
-import React from 'react'
-
 import { useLocation, useNavigate } from 'react-router'
+
+import noop from 'lodash/noop'
 
 import {
     Drawer,
@@ -13,6 +13,7 @@ import {
     Typography,
     ListItemText,
     useTheme,
+    Link,
 } from '@mui/material'
 
 import { drawerWidth } from 'global-styles/variables'
@@ -56,15 +57,37 @@ const SideBar = ({ sidebarOpenMobile, setSidebarOpenMobile }: SideBarProps) => {
                         key={i}
                         selected={location.pathname === x.link}
                         sx={{ padding: '8px 20px', borderRadius: 2, mt: 1 }}
-                        onClick={() => navigateTo(x.link)}>
+                        onClick={x.external ? noop : () => navigateTo(x.link)}>
                         <ListItemIcon>
-                            <Icon sx={{ lineHeight: '0.9' }}>{x.icon}</Icon>
+                            <Icon
+                                sx={{ lineHeight: '0.8' }}
+                                baseClassName={x.iconClass}>
+                                {x.icon}
+                            </Icon>
                         </ListItemIcon>
                         {/* <Typography variant="body2">{x.name}</Typography> */}
                         <ListItemText
-                            primary={x.name}
-                            primaryTypographyProps={{ variant: 'body2' }}
-                        />
+                            primaryTypographyProps={{ variant: 'body2' }}>
+                            {x.external ? (
+                                <Link
+                                    sx={{
+                                        textDecoration: 'none',
+                                        color: 'inherit',
+                                    }}
+                                    href={x.link}
+                                    target="_blank"
+                                    rel="noreferrer">
+                                    {x.name}
+                                </Link>
+                            ) : (
+                                <span>{x.name}</span>
+                            )}
+                        </ListItemText>
+                        {!!x.external && (
+                            <ListItemIcon>
+                                <Icon>link</Icon>
+                            </ListItemIcon>
+                        )}
                     </ListItemButton>
                 ))}
             </List>

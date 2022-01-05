@@ -23,6 +23,7 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import '@fontsource/material-icons'
+import '@fontsource/material-icons-outlined'
 
 if (process.env.NODE_ENV !== 'development') {
     Sentry.init({
