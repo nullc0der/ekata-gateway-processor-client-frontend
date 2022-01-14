@@ -31,8 +31,17 @@ const Login = () => {
     const location = useLocation()
     const auth = useAppSelector((state) => state.auth)
     const { trackPageView } = useMatomo()
-    const [formData, setFormData] = useState({ email: '', password: '' })
-    const [formError, setFormError] = useState({ email: '', password: '' })
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+        twoFactorCode: '',
+    })
+    const [formError, setFormError] = useState({
+        email: '',
+        password: '',
+        twoFactorCode: '',
+    })
+    const [twoFactorCodeRequired, setTwoFactorCodeRequired] = useState(false)
     const [loginError, setLoginError] = useState('')
 
     let navigateTo = location.state?.from?.pathname || '/projects'
@@ -50,56 +59,80 @@ const Login = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        login(formData.email, formData.password).then((response) => {
-            if (response.ok) {
-                setLoginError('')
-                setFormError({ email: '', password: '' })
-                const authToken = get(response.data, 'access_token', '')
-                const expiresAt = get(jwt_decode(authToken), 'exp', 0) * 1000
-                dispatch(authenticateUser({ authToken, expiresAt }))
-            } else {
-                if (response.status === 422) {
+        login(formData.email, formData.password, formData.twoFactorCode).then(
+            (response) => {
+                if (response.ok) {
                     setLoginError('')
-                    const details = get(response.data, 'detail', {})
-                    for (const detail of details) {
-                        if (detail.loc[1] === 'username') {
-                            setFormError((prevState) => ({
-                                ...prevState,
-                                email: detail.msg,
-                            }))
+                    setFormError({ email: '', password: '', twoFactorCode: '' })
+                    const authToken = get(response.data, 'access_token', '')
+                    const expiresAt =
+                        get(jwt_decode(authToken), 'exp', 0) * 1000
+                    dispatch(authenticateUser({ authToken, expiresAt }))
+                } else {
+                    if (response.status === 422) {
+                        setLoginError('')
+                        const details = get(response.data, 'detail', {})
+                        const formErrors = {
+                            email: '',
+                            password: '',
+                            twoFactorCode: '',
                         }
-                        if (detail.loc[1] === 'password') {
-                            setFormError((prevState) => ({
-                                ...prevState,
-                                password: detail.msg,
-                            }))
+                        for (const detail of details) {
+                            if (detail.loc[1] === 'username') {
+                                formErrors.email = detail.msg
+                            }
+                            if (detail.loc[1] === 'password') {
+                                formErrors.password = detail.msg
+                            }
+                            if (detail.loc[1] === 'two_factor_code') {
+                                formErrors.twoFactorCode = detail.msg
+                            }
+                        }
+                        setFormError(formErrors)
+                    }
+                    if (response.status === 400) {
+                        const detail = get(response.data, 'detail', {})
+                        setFormError({
+                            email: '',
+                            password: '',
+                            twoFactorCode: '',
+                        })
+                        if (detail === 'LOGIN_BAD_CREDENTIALS') {
+                            setLoginError('Invalid Credentials')
+                        }
+                        if (detail === 'LOGIN_USER_NOT_VERIFIED') {
+                            setLoginError(
+                                'Please verify your email address to login'
+                            )
+                        }
+                        if (detail === 'REQUIRED_2FA_CODE') {
+                            if (twoFactorCodeRequired) {
+                                setFormError((prevState) => ({
+                                    ...prevState,
+                                    twoFactorCode: 'Invalid two factor code',
+                                }))
+                            } else {
+                                setTwoFactorCodeRequired(true)
+                            }
                         }
                     }
-                }
-                if (response.status === 400) {
-                    const detail = get(response.data, 'detail', {})
-                    setFormError({ email: '', password: '' })
-                    if (detail === 'LOGIN_BAD_CREDENTIALS') {
-                        setLoginError('Invalid Credentials')
-                    }
-                    if (detail === 'LOGIN_USER_NOT_VERIFIED') {
+                    if (
+                        response.problem === 'NETWORK_ERROR' ||
+                        response.problem === 'CONNECTION_ERROR' ||
+                        response.problem === 'TIMEOUT_ERROR'
+                    ) {
+                        setFormError({
+                            email: '',
+                            password: '',
+                            twoFactorCode: '',
+                        })
                         setLoginError(
-                            'Please verify your email address to login'
+                            'Error connecting to server, please try later'
                         )
                     }
                 }
-                if (
-                    response.problem === 'NETWORK_ERROR' ||
-                    response.problem === 'CONNECTION_ERROR' ||
-                    response.problem === 'TIMEOUT_ERROR'
-                ) {
-                    setFormError({ email: '', password: '' })
-                    setLoginError(
-                        'Error connecting to server, please try later'
-                    )
-                }
             }
-        })
+        )
     }
 
     return auth.isAuthenticated && isTokenNotExpired() ? (
@@ -155,6 +188,20 @@ const Login = () => {
                         helperText={formError.password}
                         onChange={onChangeFormData}
                     />
+                    {!!twoFactorCodeRequired && (
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="twoFactor"
+                            label="Two Factor Code"
+                            id="twoFactorCode"
+                            value={formData.twoFactorCode}
+                            error={!!formError.twoFactorCode}
+                            helperText={formError.twoFactorCode}
+                            onChange={onChangeFormData}
+                        />
+                    )}
                     <Button
                         type="submit"
                         fullWidth

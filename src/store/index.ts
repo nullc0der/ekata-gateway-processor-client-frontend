@@ -22,6 +22,7 @@ import payoutAddressReducer from 'store/payoutAddressSlice'
 import projectReducer from 'store/projectsSlice'
 import projectPaymentsReducer from 'store/projectPaymentsSlice'
 import payoutReducer from 'store/payoutSlice'
+import user2FAReducer from 'store/user2FASlice'
 
 const rootReducer = combineReducers({
     auth: persistReducer({ key: 'auth', storage }, authReducer),
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
     project: projectReducer,
     projectPayments: projectPaymentsReducer,
     payouts: payoutReducer,
+    user2FA: user2FAReducer,
 })
 
 const store = configureStore({

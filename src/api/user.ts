@@ -15,3 +15,23 @@ export const getUser = () => {
 export const updateUser = (data: UpdateUserData) => {
     return jsonAPI(apiBase).patch('/users/me', data)
 }
+
+export const getTwoFactorState = () => {
+    return jsonAPI(apiBase).get('/client/two-factor')
+}
+
+export const createTwoFactor = () => {
+    return jsonAPI(apiBase).post('/client/two-factor')
+}
+
+export const enableTwoFactor = (code: string) => {
+    return jsonAPI(apiBase).patch('/client/two-factor', { code })
+}
+
+export const disableTwoFactor = () => {
+    return jsonAPI(apiBase).delete('/client/two-factor')
+}
+
+export const generateNewRecoveryCode = () => {
+    return jsonAPI(apiBase).post('/client/two-factor/get-new-recovery-codes')
+}

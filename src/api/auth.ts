@@ -10,10 +10,14 @@ export interface RegisterData {
     last_name: string
 }
 
-export const login = (username: string, password: string) => {
+export const login = (
+    username: string,
+    password: string,
+    two_factor_code?: string
+) => {
     return formAPI(apiBase).post(
         '/auth/jwt/login',
-        qs.stringify({ username, password })
+        qs.stringify({ username, password, two_factor_code })
     )
 }
 

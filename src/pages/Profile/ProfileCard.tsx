@@ -1,14 +1,32 @@
+import { useEffect } from 'react'
 import { Box, Avatar, Icon, Typography, Grid, Chip, Stack } from '@mui/material'
 import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict'
+import get from 'lodash/get'
 
 import BasicCard from 'components/BasicCard'
 import { UserData } from 'store/userSlice'
+import { getTwoFactorState } from 'api/user'
+import { useAppSelector, useAppDispatch } from 'hooks/reduxHooks'
+import { update2FAEnabled } from 'store/user2FASlice'
 
 interface ProfileCardProps {
     userData: UserData
 }
 
 const ProfileCard = ({ userData }: ProfileCardProps) => {
+    const dispatch = useAppDispatch()
+    const user2FAEnabled = useAppSelector((state) => state.user2FA.isEnabled)
+
+    useEffect(() => {
+        getTwoFactorState().then((response) => {
+            if (response.ok) {
+                dispatch(
+                    update2FAEnabled(get(response.data, 'is_enabled', false))
+                )
+            }
+        })
+    }, [dispatch])
+
     return (
         <BasicCard>
             <Box
@@ -16,7 +34,7 @@ const ProfileCard = ({ userData }: ProfileCardProps) => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    py: 2,
+                    py: 4,
                     position: 'relative',
                 }}>
                 <Box
@@ -29,7 +47,7 @@ const ProfileCard = ({ userData }: ProfileCardProps) => {
                         {!!userData.isVerified && (
                             <Chip
                                 label="Email Verified"
-                                color="primary"
+                                color="success"
                                 size="small"
                                 variant="outlined"
                             />
@@ -37,11 +55,19 @@ const ProfileCard = ({ userData }: ProfileCardProps) => {
                         {!!userData.isActive && (
                             <Chip
                                 label="Active"
-                                color="primary"
+                                color="success"
                                 size="small"
                                 variant="outlined"
                             />
                         )}
+                        <Chip
+                            label={
+                                user2FAEnabled ? '2FA Enabled' : '2FA Disabled'
+                            }
+                            color={user2FAEnabled ? 'success' : 'warning'}
+                            size="small"
+                            variant="outlined"
+                        />
                     </Stack>
                 </Box>
                 <Avatar sx={{ width: '80px', height: '80px', mb: 2 }}>

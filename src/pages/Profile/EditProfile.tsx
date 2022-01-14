@@ -9,13 +9,20 @@ import {
     Divider,
     Alert,
     Stack,
+    Menu,
+    MenuItem,
+    IconButton,
+    Icon,
 } from '@mui/material'
 
 import BasicCard from 'components/BasicCard'
 import { UserData, updateUserData } from 'store/userSlice'
-import { updateUser } from 'api/user'
-import { useAppDispatch } from 'hooks/reduxHooks'
+import { updateUser, disableTwoFactor, generateNewRecoveryCode } from 'api/user'
+import { useAppSelector, useAppDispatch } from 'hooks/reduxHooks'
 import { updateSnackBar } from 'store/snackBarSlice'
+import { update2FAEnabled } from 'store/user2FASlice'
+import Enable2FADialog from './Enable2FADialog'
+import TwoFactorRecoveryCodeDialog from './TwoFactorRecoveryCodeDialog'
 
 interface EditProfileProps {
     userData: UserData
@@ -23,6 +30,7 @@ interface EditProfileProps {
 
 const EditProfile = ({ userData }: EditProfileProps) => {
     const dispatch = useAppDispatch()
+    const user2FAEnabled = useAppSelector((state) => state.user2FA.isEnabled)
     const [formData, setFormData] = useState<{ [key: string]: string }>({
         username: '',
         first_name: '',
@@ -38,6 +46,14 @@ const EditProfile = ({ userData }: EditProfileProps) => {
         password: '',
     })
     const [editProfileError, setEditProfileError] = useState('')
+    const [user2FAEnableDialogShown, setShowUser2FAEnableDialog] =
+        useState(false)
+    const [user2FARecoveryCodes, setUser2FARecoveryCodes] = useState<string[]>(
+        []
+    )
+    const [actionMenuAnchorEl, setActionMenuAnchorEl] =
+        useState<null | HTMLElement>(null)
+    const actionMenuOpen = Boolean(actionMenuAnchorEl)
 
     useEffect(() => {
         setFormData({
@@ -103,6 +119,39 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                         setEditProfileError(detail.reason)
                     }
                 }
+            }
+        })
+    }
+
+    const onClickDisable2FA = () => {
+        disableTwoFactor().then((response) => {
+            if (response.ok) {
+                dispatch(update2FAEnabled(false))
+                dispatch(
+                    updateSnackBar({
+                        severity: 'warning',
+                        message: 'Two factor authentication disabled',
+                    })
+                )
+            }
+        })
+    }
+
+    const showActionMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setActionMenuAnchorEl(event.currentTarget)
+    }
+
+    const hideActionMenu = () => {
+        setActionMenuAnchorEl(null)
+    }
+
+    const onClickNewRecoveryCode = () => {
+        generateNewRecoveryCode().then((response) => {
+            if (response.ok) {
+                hideActionMenu()
+                setUser2FARecoveryCodes(
+                    get(response.data, 'recovery_codes', [])
+                )
             }
         })
     }
@@ -204,16 +253,54 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                             {editProfileError}
                         </Alert>
                     )}
-                    <Stack direction="row" justifyContent="flex-end">
+                    <Stack
+                        direction="row"
+                        justifyContent="flex-end"
+                        sx={{ mt: 2 }}>
+                        <Button
+                            variant="outlined"
+                            color={user2FAEnabled ? 'error' : 'success'}
+                            sx={{ mr: 2 }}
+                            onClick={
+                                user2FAEnabled
+                                    ? onClickDisable2FA
+                                    : () => setShowUser2FAEnableDialog(true)
+                            }>
+                            {user2FAEnabled ? 'Disable 2FA' : 'Enable 2FA'}
+                        </Button>
                         <Button
                             type="submit"
                             variant="contained"
-                            sx={{ my: 2 }}>
+                            sx={{ mr: 2 }}>
                             Update
                         </Button>
+                        {!!user2FAEnabled && (
+                            <IconButton onClick={showActionMenu}>
+                                <Icon>more_vert</Icon>
+                            </IconButton>
+                        )}
                     </Stack>
                 </Box>
             </Box>
+            <Enable2FADialog
+                open={user2FAEnableDialogShown}
+                onClose={() => setShowUser2FAEnableDialog(false)}
+                setUser2FARecoveryCodes={setUser2FARecoveryCodes}
+            />
+            <TwoFactorRecoveryCodeDialog
+                codes={user2FARecoveryCodes}
+                onClose={() => setUser2FARecoveryCodes([])}
+            />
+            {!!user2FAEnabled && (
+                <Menu
+                    anchorEl={actionMenuAnchorEl}
+                    open={actionMenuOpen}
+                    onClose={hideActionMenu}>
+                    <MenuItem onClick={onClickNewRecoveryCode}>
+                        Request new two factor recovery codes
+                    </MenuItem>
+                </Menu>
+            )}
         </BasicCard>
     )
 }
