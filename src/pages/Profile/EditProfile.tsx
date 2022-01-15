@@ -17,12 +17,12 @@ import {
 
 import BasicCard from 'components/BasicCard'
 import { UserData, updateUserData } from 'store/userSlice'
-import { updateUser, disableTwoFactor, generateNewRecoveryCode } from 'api/user'
+import { updateUser, generateNewRecoveryCode } from 'api/user'
 import { useAppSelector, useAppDispatch } from 'hooks/reduxHooks'
 import { updateSnackBar } from 'store/snackBarSlice'
-import { update2FAEnabled } from 'store/user2FASlice'
 import Enable2FADialog from './Enable2FADialog'
 import TwoFactorRecoveryCodeDialog from './TwoFactorRecoveryCodeDialog'
+import Disable2FADialog from './Disable2FADialog'
 
 interface EditProfileProps {
     userData: UserData
@@ -47,6 +47,8 @@ const EditProfile = ({ userData }: EditProfileProps) => {
     })
     const [editProfileError, setEditProfileError] = useState('')
     const [user2FAEnableDialogShown, setShowUser2FAEnableDialog] =
+        useState(false)
+    const [user2FADisableDialogShown, setShowUser2FADisableDialog] =
         useState(false)
     const [user2FARecoveryCodes, setUser2FARecoveryCodes] = useState<string[]>(
         []
@@ -119,20 +121,6 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                         setEditProfileError(detail.reason)
                     }
                 }
-            }
-        })
-    }
-
-    const onClickDisable2FA = () => {
-        disableTwoFactor().then((response) => {
-            if (response.ok) {
-                dispatch(update2FAEnabled(false))
-                dispatch(
-                    updateSnackBar({
-                        severity: 'warning',
-                        message: 'Two factor authentication disabled',
-                    })
-                )
             }
         })
     }
@@ -263,7 +251,7 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                             sx={{ mr: 2 }}
                             onClick={
                                 user2FAEnabled
-                                    ? onClickDisable2FA
+                                    ? () => setShowUser2FADisableDialog(true)
                                     : () => setShowUser2FAEnableDialog(true)
                             }>
                             {user2FAEnabled ? 'Disable 2FA' : 'Enable 2FA'}
@@ -282,10 +270,16 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                     </Stack>
                 </Box>
             </Box>
-            <Enable2FADialog
-                open={user2FAEnableDialogShown}
-                onClose={() => setShowUser2FAEnableDialog(false)}
-                setUser2FARecoveryCodes={setUser2FARecoveryCodes}
+            {user2FAEnableDialogShown && (
+                <Enable2FADialog
+                    open={user2FAEnableDialogShown}
+                    onClose={() => setShowUser2FAEnableDialog(false)}
+                    setUser2FARecoveryCodes={setUser2FARecoveryCodes}
+                />
+            )}
+            <Disable2FADialog
+                open={user2FADisableDialogShown}
+                onClose={() => setShowUser2FADisableDialog(false)}
             />
             <TwoFactorRecoveryCodeDialog
                 codes={user2FARecoveryCodes}

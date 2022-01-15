@@ -25,6 +25,7 @@ import { login } from 'api/auth'
 import { useAppDispatch, useAppSelector } from 'hooks/reduxHooks'
 import { authenticateUser } from 'store/authSlice'
 import { isTokenNotExpired } from 'utils/auth'
+import HelpTooltip from 'components/HelpTooltip'
 
 const Login = () => {
     const dispatch = useAppDispatch()
@@ -189,18 +190,31 @@ const Login = () => {
                         onChange={onChangeFormData}
                     />
                     {!!twoFactorCodeRequired && (
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="twoFactor"
-                            label="Two Factor Code"
-                            id="twoFactorCode"
-                            value={formData.twoFactorCode}
-                            error={!!formError.twoFactorCode}
-                            helperText={formError.twoFactorCode}
-                            onChange={onChangeFormData}
-                        />
+                        <>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="twoFactor"
+                                label="Two Factor Code"
+                                id="twoFactorCode"
+                                value={formData.twoFactorCode}
+                                error={!!formError.twoFactorCode}
+                                helperText={formError.twoFactorCode}
+                                onChange={onChangeFormData}
+                            />
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                }}>
+                                <Typography variant="subtitle2">
+                                    Lost access to authenticator device{' '}
+                                </Typography>
+                                <HelpTooltip title="Use one of your recovery code" />
+                            </Box>
+                        </>
                     )}
                     <Button
                         type="submit"

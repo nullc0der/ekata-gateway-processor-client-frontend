@@ -20,16 +20,20 @@ export const getTwoFactorState = () => {
     return jsonAPI(apiBase).get('/client/two-factor')
 }
 
-export const createTwoFactor = () => {
-    return jsonAPI(apiBase).post('/client/two-factor')
+export const createTwoFactor = (password: string) => {
+    return jsonAPI(apiBase).post('/client/two-factor', { password })
 }
 
 export const enableTwoFactor = (code: string) => {
     return jsonAPI(apiBase).patch('/client/two-factor', { code })
 }
 
-export const disableTwoFactor = () => {
-    return jsonAPI(apiBase).delete('/client/two-factor')
+export const disableTwoFactor = (password: string) => {
+    return jsonAPI(apiBase).delete(
+        '/client/two-factor',
+        {},
+        { data: { password } }
+    )
 }
 
 export const generateNewRecoveryCode = () => {

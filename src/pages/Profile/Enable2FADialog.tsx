@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import {
     Dialog,
@@ -11,7 +11,7 @@ import {
     TextField,
     Button,
 } from '@mui/material'
-import QrCode from 'react-qr-code'
+import QRCode from 'qrcode.react'
 import get from 'lodash/get'
 
 import { createTwoFactor, enableTwoFactor } from 'api/user'
@@ -35,18 +35,12 @@ const Enable2FADialog = ({
     const [provisioningURI, setProvisioningURI] = useState('')
     const [formData, setFormData] = useState({
         code: '',
+        password: '',
     })
     const [formError, setFormError] = useState({
         code: '',
+        password: '',
     })
-
-    useEffect(() => {
-        createTwoFactor().then((response) => {
-            if (response.ok) {
-                setProvisioningURI(get(response.data, 'provisioning_uri', ''))
-            }
-        })
-    }, [])
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prevState) => ({
@@ -55,9 +49,36 @@ const Enable2FADialog = ({
         }))
     }
 
-    const handleSubmit = (
+    const handlePasswordSubmit = (
         event: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLElement>
     ) => {
+        event.preventDefault()
+        createTwoFactor(formData.password).then((response) => {
+            if (response.ok) {
+                setProvisioningURI(get(response.data, 'provisioning_uri', ''))
+            }
+            if (response.status === 422) {
+                const details = get(response.data, 'detail', {})
+                let formErrors = { ...formError }
+                for (const detail of details) {
+                    formErrors = {
+                        ...formErrors,
+                        [detail.loc[1]]: detail.msg,
+                    }
+                }
+                setFormError(formErrors)
+            }
+            if (response.status === 400) {
+                const details = get(response.data, 'detail', '')
+                setFormError({ code: '', password: details })
+            }
+        })
+    }
+
+    const handleCodeSubmit = (
+        event: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLElement>
+    ) => {
+        event.preventDefault()
         enableTwoFactor(formData.code).then((response) => {
             if (response.ok) {
                 dispatch(
@@ -85,7 +106,7 @@ const Enable2FADialog = ({
             }
             if (response.status === 400) {
                 const details = get(response.data, 'detail', '')
-                setFormError({ code: details })
+                setFormError({ code: details, password: '' })
             }
         })
     }
@@ -95,8 +116,8 @@ const Enable2FADialog = ({
             <DialogTitle sx={{ textAlign: 'center' }}>
                 Enable Two Factor Authentication
             </DialogTitle>
-            <DialogContent>
-                {!!provisioningURI && (
+            <DialogContent sx={{ textAlign: 'center' }}>
+                {provisioningURI ? (
                     <>
                         <Typography variant="body2">
                             Scan the QR code with your authenticator app, like
@@ -109,13 +130,17 @@ const Enable2FADialog = ({
                                 display: 'flex',
                                 justifyContent: 'center',
                             }}>
-                            <QrCode value={provisioningURI} size={256} />
+                            <QRCode
+                                value={provisioningURI}
+                                size={256}
+                                includeMargin
+                            />
                         </Box>
                         <Box
                             component="form"
                             noValidate
                             sx={{ mt: 1 }}
-                            onSubmit={handleSubmit}>
+                            onSubmit={handleCodeSubmit}>
                             <Grid container justifyContent="center">
                                 <Grid item xs={8}>
                                     <TextField
@@ -132,17 +157,51 @@ const Enable2FADialog = ({
                                 </Grid>
                             </Grid>
                         </Box>
-                        <DialogActions>
-                            <Button variant="outlined" onClick={onClose}>
-                                Cancel
-                            </Button>
-                            <Button variant="outlined" onClick={handleSubmit}>
-                                Submit
-                            </Button>
-                        </DialogActions>
+                    </>
+                ) : (
+                    <>
+                        <Typography variant="body2">
+                            Verify your password first
+                        </Typography>
+                        <Box
+                            component="form"
+                            noValidate
+                            sx={{ mt: 1 }}
+                            onSubmit={handlePasswordSubmit}>
+                            <Grid container justifyContent="center">
+                                <Grid item xs={12}>
+                                    <TextField
+                                        margin="normal"
+                                        fullWidth
+                                        type="password"
+                                        id="password"
+                                        label="Password"
+                                        name="password"
+                                        error={!!formError.password}
+                                        helperText={formError.password}
+                                        value={formData.password}
+                                        onChange={handleInputChange}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Box>
                     </>
                 )}
             </DialogContent>
+            <DialogActions>
+                <Button variant="outlined" onClick={onClose}>
+                    Cancel
+                </Button>
+                <Button
+                    variant="outlined"
+                    onClick={
+                        provisioningURI
+                            ? handleCodeSubmit
+                            : handlePasswordSubmit
+                    }>
+                    Submit
+                </Button>
+            </DialogActions>
         </Dialog>
     )
 }
