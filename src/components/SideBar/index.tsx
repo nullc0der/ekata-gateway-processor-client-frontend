@@ -85,7 +85,9 @@ const SideBar = ({ sidebarOpenMobile, setSidebarOpenMobile }: SideBarProps) => {
                         </ListItemText>
                         {!!x.external && (
                             <ListItemIcon>
-                                <Icon>link</Icon>
+                                <Icon sx={{ fontSize: '1.2rem' }}>
+                                    open_in_new
+                                </Icon>
                             </ListItemIcon>
                         )}
                     </ListItemButton>
