@@ -36,6 +36,8 @@ export const disableTwoFactor = (password: string) => {
     )
 }
 
-export const generateNewRecoveryCode = () => {
-    return jsonAPI(apiBase).post('/client/two-factor/get-new-recovery-codes')
+export const generateNewRecoveryCode = (password: string) => {
+    return jsonAPI(apiBase).post('/client/two-factor/get-new-recovery-codes', {
+        password,
+    })
 }

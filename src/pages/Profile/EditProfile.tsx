@@ -17,12 +17,13 @@ import {
 
 import BasicCard from 'components/BasicCard'
 import { UserData, updateUserData } from 'store/userSlice'
-import { updateUser, generateNewRecoveryCode } from 'api/user'
+import { updateUser } from 'api/user'
 import { useAppSelector, useAppDispatch } from 'hooks/reduxHooks'
 import { updateSnackBar } from 'store/snackBarSlice'
 import Enable2FADialog from './Enable2FADialog'
 import TwoFactorRecoveryCodeDialog from './TwoFactorRecoveryCodeDialog'
 import Disable2FADialog from './Disable2FADialog'
+import Regenerate2FARecoveryCodeDialog from './Regenerate2FARecoveryCodeDialog'
 
 interface EditProfileProps {
     userData: UserData
@@ -53,6 +54,10 @@ const EditProfile = ({ userData }: EditProfileProps) => {
     const [user2FARecoveryCodes, setUser2FARecoveryCodes] = useState<string[]>(
         []
     )
+    const [
+        regenerate2FARecoveryCodeDialogShown,
+        SetRegenerate2FARecoveryCodeDialogShown,
+    ] = useState(false)
     const [actionMenuAnchorEl, setActionMenuAnchorEl] =
         useState<null | HTMLElement>(null)
     const actionMenuOpen = Boolean(actionMenuAnchorEl)
@@ -134,14 +139,8 @@ const EditProfile = ({ userData }: EditProfileProps) => {
     }
 
     const onClickNewRecoveryCode = () => {
-        generateNewRecoveryCode().then((response) => {
-            if (response.ok) {
-                hideActionMenu()
-                setUser2FARecoveryCodes(
-                    get(response.data, 'recovery_codes', [])
-                )
-            }
-        })
+        hideActionMenu()
+        SetRegenerate2FARecoveryCodeDialogShown(true)
     }
 
     return (
@@ -270,7 +269,7 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                     </Stack>
                 </Box>
             </Box>
-            {user2FAEnableDialogShown && (
+            {!!user2FAEnableDialogShown && (
                 <Enable2FADialog
                     open={user2FAEnableDialogShown}
                     onClose={() => setShowUser2FAEnableDialog(false)}
@@ -285,6 +284,15 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                 codes={user2FARecoveryCodes}
                 onClose={() => setUser2FARecoveryCodes([])}
             />
+            {!!regenerate2FARecoveryCodeDialogShown && (
+                <Regenerate2FARecoveryCodeDialog
+                    open={regenerate2FARecoveryCodeDialogShown}
+                    onClose={() =>
+                        SetRegenerate2FARecoveryCodeDialogShown(false)
+                    }
+                    setUser2FARecoveryCodes={setUser2FARecoveryCodes}
+                />
+            )}
             {!!user2FAEnabled && (
                 <Menu
                     anchorEl={actionMenuAnchorEl}
