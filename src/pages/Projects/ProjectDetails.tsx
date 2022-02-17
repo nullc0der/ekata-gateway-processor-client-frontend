@@ -221,7 +221,8 @@ const ProjectDetails = ({
                         variant="contained"
                         color="success"
                         onClick={onClickUpdate}
-                        startIcon={<Icon>edit</Icon>}>
+                        startIcon={<Icon>edit</Icon>}
+                        disableElevation>
                         Edit
                     </Button>
                     <IconButton

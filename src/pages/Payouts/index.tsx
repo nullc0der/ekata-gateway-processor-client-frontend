@@ -49,7 +49,7 @@ const headCells = [
     },
     {
         id: 'createdOn',
-        numeric: false,
+        numeric: true,
         disablePadding: false,
         label: 'Created On',
     },

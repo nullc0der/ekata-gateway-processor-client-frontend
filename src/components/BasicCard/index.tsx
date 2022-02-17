@@ -13,8 +13,10 @@ const BasicCard = ({ children }: BasicCardProps) => {
                 p: 3,
                 backgroundImage: 'none',
                 borderRadius: 4,
+                boxShadow:
+                    'rgba(0, 0, 0, 0.2) 0px 0px 2px 0px, rgba(0, 0, 0, 0.12) 0px 8px 24px -4px',
             }}
-            elevation={12}>
+            elevation={0}>
             {children}
         </Card>
     )

@@ -14,6 +14,7 @@ import {
     TableSortLabel,
     Paper,
     MenuItem,
+    Chip,
 } from '@mui/material'
 import { format } from 'date-fns'
 
@@ -57,7 +58,7 @@ const headCells: readonly HeadCell[] = [
     },
     {
         id: 'createdOn',
-        numeric: false,
+        numeric: true,
         disablePadding: false,
         label: 'Date',
     },
@@ -126,6 +127,44 @@ function PaymentTableToolbar({
             </TextField>
         </Toolbar>
     )
+}
+
+interface PaymentStatusProps {
+    status: string
+}
+
+function PaymentStatus({ status }: PaymentStatusProps) {
+    switch (status) {
+        case 'PENDING':
+            return (
+                <Chip
+                    variant="outlined"
+                    color="warning"
+                    size="small"
+                    label={status}
+                />
+            )
+        case 'OVERPAID':
+            return (
+                <Chip
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    label={status}
+                />
+            )
+        case 'FULFILLED':
+            return (
+                <Chip
+                    variant="outlined"
+                    color="success"
+                    size="small"
+                    label={status}
+                />
+            )
+        default:
+            return null
+    }
 }
 
 interface PaymentsTableProps {
@@ -215,7 +254,7 @@ export default function PaymentsTable({
                                         <TableCell align="right">
                                             {paymentData.amount_received}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell align="right">
                                             {format(
                                                 paymentData.created_on
                                                     ? new Date(
@@ -226,7 +265,9 @@ export default function PaymentsTable({
                                             )}
                                         </TableCell>
                                         <TableCell>
-                                            {paymentData.status}
+                                            <PaymentStatus
+                                                status={paymentData.status}
+                                            />
                                         </TableCell>
                                         <TableCell>
                                             {paymentData.tx_ids?.length && (

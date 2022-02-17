@@ -258,6 +258,7 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                         <Button
                             type="submit"
                             variant="contained"
+                            disableElevation
                             sx={{ mr: 2 }}>
                             Update
                         </Button>

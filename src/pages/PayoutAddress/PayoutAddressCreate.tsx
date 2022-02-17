@@ -185,7 +185,7 @@ const PayoutAddressCreate = ({
                         type="submit"
                         fullWidth
                         variant="contained"
-                        color="success"
+                        disableElevation
                         sx={{ my: 2 }}>
                         Submit
                     </Button>

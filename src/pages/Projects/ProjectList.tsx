@@ -30,8 +30,15 @@ const ProjectList = ({
                     <ListItem
                         key={i}
                         disablePadding
-                        selected={selectedProjectID === x.id}>
-                        <ListItemButton onClick={() => onSelectProject(x.id)}>
+                        selected={selectedProjectID === x.id}
+                        sx={{
+                            borderRadius: 2,
+                        }}>
+                        <ListItemButton
+                            sx={{
+                                borderRadius: 2,
+                            }}
+                            onClick={() => onSelectProject(x.id)}>
                             <ListItemText primary={x.name} />
                         </ListItemButton>
                     </ListItem>

@@ -16,6 +16,7 @@ import {
     Link,
 } from '@mui/material'
 
+import Logo from 'assets/image/logo.svg'
 import { drawerWidth } from 'global-styles/variables'
 import sidebarItems from './sidebarItems'
 
@@ -42,14 +43,28 @@ const SideBar = ({ sidebarOpenMobile, setSidebarOpenMobile }: SideBarProps) => {
             <Box
                 sx={{
                     display: 'flex',
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginTop: 1,
                 }}>
-                <Icon>apps</Icon>
-                <Typography variant="h6">Ekata</Typography>
-                <Typography variant="subtitle2">Gateway Processor</Typography>
+                <img
+                    src={Logo}
+                    alt="Logo"
+                    style={{ width: '64px', height: '64px' }}
+                />
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        marginLeft: 1,
+                    }}>
+                    <Typography variant="h6">Ekata</Typography>
+                    <Typography variant="subtitle2">
+                        Gateway Processor
+                    </Typography>
+                </Box>
             </Box>
             <List sx={{ marginTop: 1 }}>
                 {sidebarItems.map((x, i) => (
