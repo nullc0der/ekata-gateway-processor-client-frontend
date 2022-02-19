@@ -5,9 +5,9 @@ import get from 'lodash/get'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
-import { useMediaQuery, useTheme, Collapse } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
+import { useMediaQuery, useTheme, Collapse, Icon } from '@mui/material'
 import { TransitionGroup } from 'react-transition-group'
 
 import Logo from 'assets/image/logo.svg'
@@ -18,13 +18,16 @@ const ForgotPassword = () => {
     const [emailError, setEmailError] = useState('')
     const [forgotPasswordError, setForgotPasswordError] = useState('')
     const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState(false)
+    const [forgotAPIcalling, setForgotAPIcalling] = useState(false)
     const theme = useTheme()
     const isSM = useMediaQuery(theme.breakpoints.down('md'))
     const isXS = useMediaQuery(theme.breakpoints.down('sm'))
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        setForgotAPIcalling(true)
         forgotPassword(email).then((response) => {
+            setForgotAPIcalling(false)
             if (response.ok) {
                 setEmailError('')
                 setForgotPasswordError('')
@@ -85,7 +88,7 @@ const ForgotPassword = () => {
                             alignItems: 'end',
                         }}>
                         <Typography component="h1" variant="h5" color="primary">
-                            Reset Password
+                            Forgot Password
                         </Typography>
                         <Typography
                             component="span"
@@ -115,13 +118,17 @@ const ForgotPassword = () => {
                             event: React.ChangeEvent<HTMLInputElement>
                         ) => setEmail(event.target.value)}
                     />
-                    <Button
+                    <LoadingButton
                         type="submit"
                         fullWidth
+                        sx={{ my: 3 }}
+                        loading={forgotAPIcalling}
+                        loadingPosition="end"
+                        endIcon={<Icon>arrow_forward</Icon>}
                         variant="contained"
-                        sx={{ my: 3 }}>
+                        disableElevation>
                         Submit
-                    </Button>
+                    </LoadingButton>
                     <TransitionGroup>
                         {!!forgotPasswordError && (
                             <Collapse>

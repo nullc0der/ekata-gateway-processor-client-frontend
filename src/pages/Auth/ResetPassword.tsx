@@ -5,18 +5,17 @@ import { Link as RouterLink } from 'react-router-dom'
 
 import get from 'lodash/get'
 
-import Avatar from '@mui/material/Avatar'
-import Icon from '@mui/material/Icon'
 import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
-import Paper from '@mui/material/Paper'
 import Alert from '@mui/material/Alert'
 import Link from '@mui/material/Link'
 import Grid from '@mui/material/Grid'
+import { LoadingButton } from '@mui/lab'
+import { useMediaQuery, useTheme, Collapse, Icon } from '@mui/material'
+import { TransitionGroup } from 'react-transition-group'
 
+import Logo from 'assets/image/logo.svg'
 import { resetPassword } from 'api/auth'
 
 const ResetPassword = () => {
@@ -25,6 +24,10 @@ const ResetPassword = () => {
     const [passwordError, setPasswordError] = useState('')
     const [resetPasswordError, setResetPasswordError] = useState('')
     const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false)
+    const [resetAPICalling, setResetAPICalling] = useState(false)
+    const theme = useTheme()
+    const isSM = useMediaQuery(theme.breakpoints.down('md'))
+    const isXS = useMediaQuery(theme.breakpoints.down('sm'))
 
     const params = useParams()
 
@@ -36,7 +39,9 @@ const ResetPassword = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        setResetAPICalling(true)
         resetPassword(token, password).then((response) => {
+            setResetAPICalling(false)
             if (response.ok) {
                 setPasswordError('')
                 setResetPasswordError('')
@@ -68,22 +73,47 @@ const ResetPassword = () => {
     }
 
     return (
-        <Container
-            maxWidth="xs"
-            sx={{ display: 'flex', alignItems: 'center', minHeight: '100vh' }}>
-            <Paper
+        <Box
+            sx={{
+                display: 'flex',
+                height: '100vh',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}>
+            <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
-                    padding: 4,
-                    backgroundImage: 'none',
-                }}
-                elevation={6}>
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <Icon>lock-outline</Icon>
-                </Avatar>
-                <Typography component="h5">Reset Password</Typography>
+                    width: isSM ? '80%' : '40%',
+                }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}>
+                    <img
+                        src={Logo}
+                        alt="Logo"
+                        style={{ width: '64px', height: '64px' }}
+                    />
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'end',
+                        }}>
+                        <Typography component="h1" variant="h5" color="primary">
+                            Reset Password
+                        </Typography>
+                        <Typography
+                            component="span"
+                            display={isXS ? 'none' : 'inline'}
+                            variant="subtitle2">
+                            Type your new password below
+                        </Typography>
+                    </Box>
+                </Box>
                 <Box
                     component="form"
                     noValidate
@@ -103,38 +133,48 @@ const ResetPassword = () => {
                             event: React.ChangeEvent<HTMLInputElement>
                         ) => setPassword(event.target.value)}
                     />
-                    <Button
+                    <LoadingButton
                         type="submit"
                         fullWidth
+                        sx={{ my: 3 }}
+                        loading={resetAPICalling}
+                        loadingPosition="end"
+                        endIcon={<Icon>arrow_forward</Icon>}
                         variant="contained"
-                        sx={{ my: 3 }}>
+                        disableElevation>
                         Submit
-                    </Button>
-                    {!!resetPasswordError && (
-                        <Alert severity="error" sx={{ mb: 3 }}>
-                            {resetPasswordError}
-                        </Alert>
-                    )}
-                    {!!resetPasswordSuccess && (
-                        <React.Fragment>
-                            <Alert severity="success" sx={{ mb: 2 }}>
-                                Password changed successfully
-                            </Alert>
-                            <Grid container justifyContent="center">
-                                <Grid item>
-                                    <Link
-                                        component={RouterLink}
-                                        to={'/login'}
-                                        variant="body2">
-                                        Sign in
-                                    </Link>
-                                </Grid>
-                            </Grid>
-                        </React.Fragment>
-                    )}
+                    </LoadingButton>
+                    <TransitionGroup>
+                        {!!resetPasswordError && (
+                            <Collapse>
+                                <Alert severity="error" sx={{ mb: 3 }}>
+                                    {resetPasswordError}
+                                </Alert>
+                            </Collapse>
+                        )}
+                        {!!resetPasswordSuccess && (
+                            <Collapse>
+                                <React.Fragment>
+                                    <Alert severity="success" sx={{ mb: 2 }}>
+                                        Password changed successfully
+                                    </Alert>
+                                    <Grid container justifyContent="center">
+                                        <Grid item>
+                                            <Link
+                                                component={RouterLink}
+                                                to={'/login'}
+                                                variant="body2">
+                                                Sign in
+                                            </Link>
+                                        </Grid>
+                                    </Grid>
+                                </React.Fragment>
+                            </Collapse>
+                        )}
+                    </TransitionGroup>
                 </Box>
-            </Paper>
-        </Container>
+            </Box>
+        </Box>
     )
 }
 
