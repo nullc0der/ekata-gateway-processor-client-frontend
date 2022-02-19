@@ -10,10 +10,13 @@ import {
     Grid,
     TextField,
     Button,
+    Icon,
 } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 import QRCode from 'qrcode.react'
 import get from 'lodash/get'
 
+import EnhancedPasswordField from 'components/EnhancedPasswordField'
 import { createTwoFactor, enableTwoFactor } from 'api/user'
 import { useAppDispatch } from 'hooks/reduxHooks'
 import { updateSnackBar } from 'store/snackBarSlice'
@@ -41,19 +44,29 @@ const Enable2FADialog = ({
         code: '',
         password: '',
     })
+    const [enablingTwoFactor, setEnablingTwoFactor] = useState(false)
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (id: string, value: string) => {
         setFormData((prevState) => ({
             ...prevState,
-            [event.target.id]: event.target.value,
+            [id]: value,
         }))
+        const hasError = get(formError, id, '').length
+        if (hasError) {
+            setFormError((prevState) => ({
+                ...prevState,
+                [id]: '',
+            }))
+        }
     }
 
     const handlePasswordSubmit = (
         event: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLElement>
     ) => {
         event.preventDefault()
+        setEnablingTwoFactor(true)
         createTwoFactor(formData.password).then((response) => {
+            setEnablingTwoFactor(false)
             if (response.ok) {
                 setProvisioningURI(get(response.data, 'provisioning_uri', ''))
             }
@@ -79,7 +92,9 @@ const Enable2FADialog = ({
         event: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLElement>
     ) => {
         event.preventDefault()
+        setEnablingTwoFactor(true)
         enableTwoFactor(formData.code).then((response) => {
+            setEnablingTwoFactor(false)
             if (response.ok) {
                 dispatch(
                     updateSnackBar({
@@ -152,7 +167,14 @@ const Enable2FADialog = ({
                                         error={!!formError.code}
                                         helperText={formError.code}
                                         value={formData.code}
-                                        onChange={handleInputChange}
+                                        onChange={(
+                                            event: React.ChangeEvent<HTMLInputElement>
+                                        ) =>
+                                            handleInputChange(
+                                                event.target.id,
+                                                event.target.value
+                                            )
+                                        }
                                     />
                                 </Grid>
                             </Grid>
@@ -170,17 +192,17 @@ const Enable2FADialog = ({
                             onSubmit={handlePasswordSubmit}>
                             <Grid container justifyContent="center">
                                 <Grid item xs={12}>
-                                    <TextField
-                                        margin="normal"
+                                    <EnhancedPasswordField
                                         fullWidth
-                                        type="password"
-                                        id="password"
-                                        label="Password"
                                         name="password"
+                                        label="Password"
+                                        id="password"
                                         error={!!formError.password}
                                         helperText={formError.password}
-                                        value={formData.password}
-                                        onChange={handleInputChange}
+                                        showPasswordStrength={false}
+                                        onChange={(id: string, value: string) =>
+                                            handleInputChange(id, value)
+                                        }
                                     />
                                 </Grid>
                             </Grid>
@@ -192,15 +214,18 @@ const Enable2FADialog = ({
                 <Button variant="outlined" onClick={onClose}>
                     Cancel
                 </Button>
-                <Button
+                <LoadingButton
                     variant="outlined"
                     onClick={
                         provisioningURI
                             ? handleCodeSubmit
                             : handlePasswordSubmit
-                    }>
-                    Submit
-                </Button>
+                    }
+                    loading={enablingTwoFactor}
+                    loadingPosition="end"
+                    endIcon={<Icon>arrow_forward</Icon>}>
+                    {provisioningURI ? 'Verify Code' : 'Verify Password'}
+                </LoadingButton>
             </DialogActions>
         </Dialog>
     )

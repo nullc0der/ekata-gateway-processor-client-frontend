@@ -9,10 +9,12 @@ import {
     Grid,
     Typography,
     Box,
-    TextField,
     Button,
+    Icon,
 } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 
+import EnhancedPasswordField from 'components/EnhancedPasswordField'
 import { disableTwoFactor } from 'api/user'
 import { useAppDispatch } from 'hooks/reduxHooks'
 import { updateSnackBar } from 'store/snackBarSlice'
@@ -32,11 +34,12 @@ const Disable2FADialog = ({ open, onClose }: Disable2FADialogProps) => {
     const [formError, setFormError] = useState({
         password: '',
     })
+    const [disablingTwoFactor, setDisablingTwoFactor] = useState(false)
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (id: string, value: string) => {
         setFormData((prevState) => ({
             ...prevState,
-            [event.target.id]: event.target.value,
+            [id]: value,
         }))
     }
 
@@ -44,7 +47,9 @@ const Disable2FADialog = ({ open, onClose }: Disable2FADialogProps) => {
         event: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLElement>
     ) => {
         event.preventDefault()
+        setDisablingTwoFactor(true)
         disableTwoFactor(formData.password).then((response) => {
+            setDisablingTwoFactor(false)
             if (response.ok) {
                 onClose()
                 dispatch(update2FAEnabled(false))
@@ -89,17 +94,17 @@ const Disable2FADialog = ({ open, onClose }: Disable2FADialogProps) => {
                     onSubmit={handlePasswordSubmit}>
                     <Grid container justifyContent="center">
                         <Grid item xs={12}>
-                            <TextField
-                                margin="normal"
+                            <EnhancedPasswordField
                                 fullWidth
-                                type="password"
-                                id="password"
-                                label="Password"
                                 name="password"
+                                label="Password"
+                                id="password"
                                 error={!!formError.password}
                                 helperText={formError.password}
-                                value={formData.password}
-                                onChange={handleInputChange}
+                                showPasswordStrength={false}
+                                onChange={(id: string, value: string) =>
+                                    handleInputChange(id, value)
+                                }
                             />
                         </Grid>
                     </Grid>
@@ -109,9 +114,14 @@ const Disable2FADialog = ({ open, onClose }: Disable2FADialogProps) => {
                 <Button variant="outlined" onClick={onClose}>
                     Cancel
                 </Button>
-                <Button variant="outlined" onClick={handlePasswordSubmit}>
+                <LoadingButton
+                    variant="outlined"
+                    onClick={handlePasswordSubmit}
+                    loading={disablingTwoFactor}
+                    loadingPosition="end"
+                    endIcon={<Icon>arrow_forward</Icon>}>
                     Submit
-                </Button>
+                </LoadingButton>
             </DialogActions>
         </Dialog>
     )

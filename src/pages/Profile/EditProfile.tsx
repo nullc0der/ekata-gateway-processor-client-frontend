@@ -14,7 +14,9 @@ import {
     IconButton,
     Icon,
 } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 
+import EnhancedPasswordField from 'components/EnhancedPasswordField'
 import BasicCard from 'components/BasicCard'
 import { UserData, updateUserData } from 'store/userSlice'
 import { updateUser } from 'api/user'
@@ -60,6 +62,7 @@ const EditProfile = ({ userData }: EditProfileProps) => {
     ] = useState(false)
     const [actionMenuAnchorEl, setActionMenuAnchorEl] =
         useState<null | HTMLElement>(null)
+    const [updatingProfile, setUpdatingProfile] = useState(false)
     const actionMenuOpen = Boolean(actionMenuAnchorEl)
 
     useEffect(() => {
@@ -72,22 +75,23 @@ const EditProfile = ({ userData }: EditProfileProps) => {
         })
     }, [userData])
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (id: string, value: string) => {
         setFormData((prevState) => ({
             ...prevState,
-            [event.target.id]: event.target.value,
+            [id]: value,
         }))
-        const hasError = get(formError, event.target.id, '').length
+        const hasError = get(formError, id, '').length
         if (hasError) {
             setFormError((prevState) => ({
                 ...prevState,
-                [event.target.id]: '',
+                [id]: '',
             }))
         }
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        setUpdatingProfile(true)
         const updateData: { [key: string]: string } = {}
         for (const data in formData) {
             if (formData[data].length) {
@@ -95,6 +99,7 @@ const EditProfile = ({ userData }: EditProfileProps) => {
             }
         }
         updateUser(updateData).then((response) => {
+            setUpdatingProfile(false)
             if (response.ok) {
                 const userData: UserData = {
                     id: get(response.data, 'id', ''),
@@ -180,7 +185,14 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                                 error={!!formError.username}
                                 helperText={formError.username}
                                 value={formData.username}
-                                onChange={handleInputChange}
+                                onChange={(
+                                    event: React.ChangeEvent<HTMLInputElement>
+                                ) =>
+                                    handleInputChange(
+                                        event.target.id,
+                                        event.target.value
+                                    )
+                                }
                             />
                         </Grid>
                     </Grid>
@@ -195,7 +207,14 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                                 error={!!formError.first_name}
                                 helperText={formError.first_name}
                                 value={formData.first_name}
-                                onChange={handleInputChange}
+                                onChange={(
+                                    event: React.ChangeEvent<HTMLInputElement>
+                                ) =>
+                                    handleInputChange(
+                                        event.target.id,
+                                        event.target.value
+                                    )
+                                }
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -208,37 +227,44 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                                 error={!!formError.last_name}
                                 helperText={formError.last_name}
                                 value={formData.last_name}
-                                onChange={handleInputChange}
+                                onChange={(
+                                    event: React.ChangeEvent<HTMLInputElement>
+                                ) =>
+                                    handleInputChange(
+                                        event.target.id,
+                                        event.target.value
+                                    )
+                                }
                             />
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
-                            <TextField
-                                margin="normal"
+                            <EnhancedPasswordField
                                 fullWidth
-                                id="current_password"
-                                label="Current Password"
                                 name="currentPassword"
-                                type="password"
+                                label="Current Password"
+                                id="current_password"
                                 error={!!formError.current_password}
                                 helperText={formError.current_password}
-                                value={formData.current_password}
-                                onChange={handleInputChange}
+                                showPasswordStrength={false}
+                                onChange={(id: string, value: string) =>
+                                    handleInputChange(id, value)
+                                }
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
-                            <TextField
-                                margin="normal"
+                            <EnhancedPasswordField
                                 fullWidth
-                                id="password"
-                                label="New Password"
                                 name="password"
-                                type="password"
+                                label="New Password"
+                                id="password"
                                 error={!!formError.password}
                                 helperText={formError.password}
-                                value={formData.password}
-                                onChange={handleInputChange}
+                                showPasswordStrength={true}
+                                onChange={(id: string, value: string) =>
+                                    handleInputChange(id, value)
+                                }
                             />
                         </Grid>
                     </Grid>
@@ -262,13 +288,15 @@ const EditProfile = ({ userData }: EditProfileProps) => {
                             }>
                             {user2FAEnabled ? 'Disable 2FA' : 'Enable 2FA'}
                         </Button>
-                        <Button
+                        <LoadingButton
                             type="submit"
+                            loading={updatingProfile}
+                            loadingPosition="end"
+                            endIcon={<Icon>arrow_forward</Icon>}
                             variant="contained"
-                            disableElevation
-                            sx={{ mr: 2 }}>
+                            disableElevation>
                             Update
-                        </Button>
+                        </LoadingButton>
                         {!!user2FAEnabled && (
                             <IconButton onClick={showActionMenu}>
                                 <Icon>more_vert</Icon>
