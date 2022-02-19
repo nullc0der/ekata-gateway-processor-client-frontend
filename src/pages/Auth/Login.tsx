@@ -14,7 +14,7 @@ import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
 import LoadingButton from '@mui/lab/LoadingButton'
-import { useMediaQuery, useTheme, Collapse, Icon } from '@mui/material'
+import { useTheme, Collapse, Icon } from '@mui/material'
 import { TransitionGroup } from 'react-transition-group'
 
 import { useMatomo } from '@datapunt/matomo-tracker-react'
@@ -28,7 +28,7 @@ import EnhancedPasswordField from 'components/EnhancedPasswordField'
 import Logo from 'assets/image/logo.svg'
 import LoginSVG from 'assets/image/login.svg'
 
-// TODO: form validation whether it resets and add again if new error
+// TODO: form validation whether it resets and add again if new error, loading button on api call and placeholder, enhanced password on every password field
 
 const Login = () => {
     const dispatch = useAppDispatch()
@@ -49,8 +49,6 @@ const Login = () => {
     const [loginError, setLoginError] = useState('')
     const [loggingIn, setLoggingIn] = useState(false)
     const theme = useTheme()
-    const isSM = useMediaQuery(theme.breakpoints.down('md'))
-    const isXS = useMediaQuery(theme.breakpoints.down('sm'))
 
     let navigateTo = location.state?.from?.pathname || '/projects'
 
@@ -165,13 +163,13 @@ const Login = () => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    flex: isSM ? 1 : 70,
+                    flex: { xs: 1, md: 70 },
                 }}>
                 <Box
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        width: isSM ? (isXS ? '80%' : '60%') : '40%',
+                        width: { xs: '80%', sm: '60%', md: '40%' },
                     }}>
                     <Box
                         sx={{
@@ -198,7 +196,7 @@ const Login = () => {
                             </Typography>
                             <Typography
                                 component="span"
-                                display={isXS ? 'none' : 'inline'}
+                                display={{ xs: 'none', sm: 'inline' }}
                                 variant="subtitle2">
                                 Enter email and password below to continue
                             </Typography>
@@ -322,7 +320,7 @@ const Login = () => {
             <Box
                 sx={{
                     flex: 30,
-                    display: isSM ? 'none' : 'flex',
+                    display: { xs: 'none', md: 'flex' },
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',

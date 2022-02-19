@@ -94,6 +94,13 @@ const ProjectForm = ({
             ...prevState,
             [event.target.id]: event.target.value,
         }))
+        const hasError = get(formError, event.target.id, '').length
+        if (hasError) {
+            setFormError((prevState) => ({
+                ...prevState,
+                [event.target.id]: '',
+            }))
+        }
     }
 
     const handleEnabledCurrencyChange = (

@@ -7,14 +7,14 @@ import get from 'lodash/get'
 
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
 import Alert from '@mui/material/Alert'
 import Link from '@mui/material/Link'
 import Grid from '@mui/material/Grid'
 import { LoadingButton } from '@mui/lab'
-import { useMediaQuery, useTheme, Collapse, Icon } from '@mui/material'
+import { Collapse, Icon } from '@mui/material'
 import { TransitionGroup } from 'react-transition-group'
 
+import EnhancedPasswordField from 'components/EnhancedPasswordField'
 import Logo from 'assets/image/logo.svg'
 import { resetPassword } from 'api/auth'
 
@@ -25,9 +25,6 @@ const ResetPassword = () => {
     const [resetPasswordError, setResetPasswordError] = useState('')
     const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false)
     const [resetAPICalling, setResetAPICalling] = useState(false)
-    const theme = useTheme()
-    const isSM = useMediaQuery(theme.breakpoints.down('md'))
-    const isXS = useMediaQuery(theme.breakpoints.down('sm'))
 
     const params = useParams()
 
@@ -84,7 +81,7 @@ const ResetPassword = () => {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    width: isSM ? '80%' : '40%',
+                    width: { xs: '80%', md: '40%' },
                 }}>
                 <Box
                     sx={{
@@ -108,7 +105,7 @@ const ResetPassword = () => {
                         </Typography>
                         <Typography
                             component="span"
-                            display={isXS ? 'none' : 'inline'}
+                            display={{ xs: 'none', sm: 'inline' }}
                             variant="subtitle2">
                             Type your new password below
                         </Typography>
@@ -119,19 +116,16 @@ const ResetPassword = () => {
                     noValidate
                     onSubmit={handleSubmit}
                     sx={{ mt: 1 }}>
-                    <TextField
+                    <EnhancedPasswordField
                         required
                         fullWidth
-                        id="password"
-                        label="Password"
                         name="password"
-                        type="password"
-                        value={password}
+                        label="Password"
+                        id="password"
                         error={!!passwordError}
                         helperText={passwordError}
-                        onChange={(
-                            event: React.ChangeEvent<HTMLInputElement>
-                        ) => setPassword(event.target.value)}
+                        showPasswordStrength={true}
+                        onChange={(_, value: string) => setPassword(value)}
                     />
                     <LoadingButton
                         type="submit"

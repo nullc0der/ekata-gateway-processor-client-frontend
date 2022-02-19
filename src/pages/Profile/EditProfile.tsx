@@ -77,6 +77,13 @@ const EditProfile = ({ userData }: EditProfileProps) => {
             ...prevState,
             [event.target.id]: event.target.value,
         }))
+        const hasError = get(formError, event.target.id, '').length
+        if (hasError) {
+            setFormError((prevState) => ({
+                ...prevState,
+                [event.target.id]: '',
+            }))
+        }
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

@@ -14,7 +14,7 @@ import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
 import { LoadingButton } from '@mui/lab'
-import { useMediaQuery, useTheme, Collapse, Icon } from '@mui/material'
+import { useTheme, Collapse, Icon } from '@mui/material'
 import { TransitionGroup } from 'react-transition-group'
 
 import EnhancedPasswordField from 'components/EnhancedPasswordField'
@@ -42,8 +42,6 @@ const Register = () => {
     const [registerSuccess, setRegisterSuccess] = useState(false)
     const [signingUp, setSigningUp] = useState(false)
     const theme = useTheme()
-    const isSM = useMediaQuery(theme.breakpoints.down('md'))
-    const isXS = useMediaQuery(theme.breakpoints.down('sm'))
 
     useEffect(() => {
         trackPageView({})
@@ -141,13 +139,13 @@ const Register = () => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    flex: isSM ? 1 : 70,
+                    flex: { xs: 1, md: 70 },
                 }}>
                 <Box
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        width: isSM ? (isXS ? '80%' : '60%') : '50%',
+                        width: { xs: '80%', sm: '60%', lg: '50%', xl: '40%' },
                     }}>
                     <Box
                         sx={{
@@ -174,7 +172,7 @@ const Register = () => {
                             </Typography>
                             <Typography
                                 component="span"
-                                display={isXS ? 'none' : 'inline'}
+                                display={{ xs: 'none', sm: 'inline' }}
                                 variant="subtitle2">
                                 Submit following form to complete signup process
                             </Typography>
@@ -186,7 +184,12 @@ const Register = () => {
                         onSubmit={handleSubmit}
                         sx={{ mt: 1 }}>
                         <Grid container>
-                            <Grid item xs={12} sm={6} pb={2} pr={!isSM ? 2 : 0}>
+                            <Grid
+                                item
+                                xs={12}
+                                sm={6}
+                                pb={2}
+                                pr={{ xs: 0, sm: 1 }}>
                                 <TextField
                                     autoComplete="given-name"
                                     name="firstName"
@@ -329,7 +332,7 @@ const Register = () => {
             <Box
                 sx={{
                     flex: 30,
-                    display: isSM ? 'none' : 'flex',
+                    display: { xs: 'none', md: 'flex' },
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',

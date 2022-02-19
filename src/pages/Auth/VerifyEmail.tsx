@@ -5,7 +5,7 @@ import { Link as RouterLink } from 'react-router-dom'
 
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
-import { Box, useTheme, useMediaQuery } from '@mui/material'
+import { Box } from '@mui/material'
 
 import Logo from 'assets/image/logo.svg'
 import { verifyEmail } from 'api/auth'
@@ -14,8 +14,6 @@ const VerifyEmail = () => {
     const params = useParams()
     const [verificationResult, setVerificationResult] = useState('')
     const [showLoginLink, setShowLoginLink] = useState(false)
-    const theme = useTheme()
-    const isSM = useMediaQuery(theme.breakpoints.down('md'))
 
     useEffect(() => {
         const token = params.token || ''
@@ -41,7 +39,7 @@ const VerifyEmail = () => {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    width: isSM ? '80%' : '40%',
+                    width: { xs: '80%', md: '40%' },
                 }}>
                 <Box
                     sx={{

@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Alert from '@mui/material/Alert'
 import { LoadingButton } from '@mui/lab'
-import { useMediaQuery, useTheme, Collapse, Icon } from '@mui/material'
+import { Collapse, Icon } from '@mui/material'
 import { TransitionGroup } from 'react-transition-group'
 
 import Logo from 'assets/image/logo.svg'
@@ -19,9 +19,6 @@ const ForgotPassword = () => {
     const [forgotPasswordError, setForgotPasswordError] = useState('')
     const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState(false)
     const [forgotAPIcalling, setForgotAPIcalling] = useState(false)
-    const theme = useTheme()
-    const isSM = useMediaQuery(theme.breakpoints.down('md'))
-    const isXS = useMediaQuery(theme.breakpoints.down('sm'))
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -68,7 +65,7 @@ const ForgotPassword = () => {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    width: isSM ? '80%' : '40%',
+                    width: { xs: '80%', md: '40%' },
                 }}>
                 <Box
                     sx={{
@@ -92,7 +89,7 @@ const ForgotPassword = () => {
                         </Typography>
                         <Typography
                             component="span"
-                            display={isXS ? 'none' : 'inline'}
+                            display={{ xs: 'none', sm: 'inline' }}
                             variant="subtitle2">
                             Type your email address below to get a link to reset
                             your password
