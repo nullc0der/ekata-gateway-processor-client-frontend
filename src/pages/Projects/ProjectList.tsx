@@ -33,6 +33,7 @@ const ProjectList = ({
                         selected={selectedProjectID === x.id}
                         sx={{
                             borderRadius: 2,
+                            my: 1,
                         }}>
                         <ListItemButton
                             sx={{

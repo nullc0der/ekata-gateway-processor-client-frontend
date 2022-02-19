@@ -29,18 +29,24 @@ const increaseOrDecreaseActiveProject = (
 ) => {
     if (newState?.enabled_currency && newState?.enabled_currency?.length) {
         if (
-            editedProject?.enabled_currency ||
+            editedProject?.enabled_currency &&
             editedProject?.enabled_currency?.length
         ) {
             return 0
         } else {
             return 1
         }
-    } else {
+    }
+    if (
+        editedProject?.enabled_currency &&
+        editedProject?.enabled_currency?.length
+    ) {
         return -1
     }
+    return 0
 }
 
+// TODO: Check redux toolkit docs, state change feels unnatural
 const projectsSlice = createSlice({
     name: 'projects',
     initialState,

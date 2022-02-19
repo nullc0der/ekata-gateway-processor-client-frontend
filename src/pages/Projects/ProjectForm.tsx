@@ -10,7 +10,9 @@ import {
     FormLabel,
     Switch,
     TextField,
+    Icon,
 } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 import get from 'lodash/get'
 import { ApiResponse } from 'apisauce'
 
@@ -39,6 +41,7 @@ interface ProjectsFormProps {
         apiKey: string
         paymentSignatureSecret: string
     }) => void
+    setSelectedProjectID: (projectID: string) => void
 }
 
 const initialFormData = {
@@ -65,10 +68,12 @@ const ProjectForm = ({
     projectData,
     payoutAddresses,
     setApiKey,
+    setSelectedProjectID,
 }: ProjectsFormProps) => {
     const dispatch = useAppDispatch()
     const [formData, setFormData] = useState<ProjectFormData>(initialFormData)
     const [formError, setFormError] = useState(initialFormError)
+    const [formUpdating, setFormUpdating] = useState(false)
 
     useEffect(() => {
         if (type === 'update') {
@@ -152,6 +157,7 @@ const ProjectForm = ({
                         apiKey: apiKey || '',
                         paymentSignatureSecret: paymentSignatureSecret || '',
                     })
+                    setSelectedProjectID(responseData.id)
                 }
                 if (type === 'update') {
                     dispatch(editProject(response.data))
@@ -187,15 +193,18 @@ const ProjectForm = ({
         submitDataKeys.forEach(
             (key) => !submitData[key] && delete submitData[key]
         )
+        setFormUpdating(true)
         if (type === 'create') {
-            createProject(submitData).then((response) =>
+            createProject(submitData).then((response) => {
+                setFormUpdating(false)
                 handleResponse(response)
-            )
+            })
         }
         if (type === 'update' && projectData) {
-            updateProject(projectData?.id, submitData).then((response) =>
+            updateProject(projectData?.id, submitData).then((response) => {
+                setFormUpdating(false)
                 handleResponse(response)
-            )
+            })
         }
     }
 
@@ -290,9 +299,14 @@ const ProjectForm = ({
                 <Button variant="outlined" onClick={onClose}>
                     Cancel
                 </Button>
-                <Button variant="outlined" onClick={handleSubmit}>
+                <LoadingButton
+                    variant="outlined"
+                    onClick={handleSubmit}
+                    loading={formUpdating}
+                    loadingPosition="end"
+                    endIcon={<Icon>arrow_forward</Icon>}>
                     {type === 'create' ? 'Create' : 'Update'}
-                </Button>
+                </LoadingButton>
             </DialogActions>
         </Dialog>
     )

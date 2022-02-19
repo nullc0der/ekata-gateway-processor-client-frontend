@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Typography, Container, Grid, Button, Box } from '@mui/material'
+import {
+    Typography,
+    Container,
+    Grid,
+    Button,
+    Box,
+    useTheme,
+    useMediaQuery,
+} from '@mui/material'
 import isEmpty from 'lodash/isEmpty'
 import find from 'lodash/find'
 import { useMatomo } from '@datapunt/matomo-tracker-react'
@@ -22,6 +30,7 @@ import {
 import { getPayoutAddresses } from 'api/payoutAddress'
 import PageHeader from 'components/PageHeader'
 import BasicCard from 'components/BasicCard'
+import LoadingFallback from 'components/LoadingFallback'
 import ProjectStats from './ProjectStats'
 import ProjectForm from './ProjectForm'
 import ProjectList from './ProjectList'
@@ -72,8 +81,11 @@ const Projects = () => {
         apiKey: '',
         paymentSignatureSecret: '',
     })
+    const [fetchingProjects, setFetchingProjects] = useState(false)
     const selectedProject = find(projects, (x) => x.id === selectedProjectID)
     const { trackPageView } = useMatomo()
+    const theme = useTheme()
+    const isXS = useMediaQuery(theme.breakpoints.down('sm'))
 
     useEffect(() => {
         trackPageView({})
@@ -88,7 +100,9 @@ const Projects = () => {
             })
         }
         if (isEmpty(projects)) {
+            setFetchingProjects(true)
             getProjects().then((response) => {
+                setFetchingProjects(false)
                 if (response.ok) {
                     dispatch(updateProjects(response.data || []))
                 }
@@ -101,6 +115,12 @@ const Projects = () => {
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        if (projects.length && !isXS && !selectedProjectID.length) {
+            setSelectedProjectID(projects[0].id)
+        }
+    }, [projects, isXS, selectedProjectID])
 
     const openProjectForm = (formType: 'create' | 'update') => {
         setProjectFormOpen(true)
@@ -164,52 +184,73 @@ const Projects = () => {
                 </Typography>
             </PageHeader>
             {!!projectStats && <ProjectStats data={projectStats} />}
-            {isEmpty(projects) ? (
-                <NoProject onClickNew={() => openProjectForm('create')} />
+            {fetchingProjects ? (
+                <LoadingFallback />
             ) : (
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={5} md={4}>
-                        <Box
-                            sx={{
-                                display: {
-                                    xs: !selectedProject ? 'block' : 'none',
-                                    sm: 'block',
-                                },
-                            }}>
-                            <ProjectList
-                                projects={projects}
-                                selectedProjectID={selectedProjectID}
-                                onClickNew={() => openProjectForm('create')}
-                                onSelectProject={setSelectedProjectID}
-                            />
-                        </Box>
-                    </Grid>
-                    {!!selectedProject && (
-                        <Grid item xs={12} sm={7} md={8}>
-                            <ProjectDetails
-                                selectedProject={selectedProject}
-                                onClickUpdate={() => openProjectForm('update')}
-                                handleDeleteProject={handleDeleteProject}
-                                onClickNewApiKey={onClickGetNewApiKey}
-                                showProjectList={showProjectList}
-                                onClickNewPaymentSignatureSecret={
-                                    onClickGetNewPaymentSignatureSecret
-                                }
-                            />
+                <>
+                    {isEmpty(projects) ? (
+                        <NoProject
+                            onClickNew={() => openProjectForm('create')}
+                        />
+                    ) : (
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={5} md={4}>
+                                <Box
+                                    sx={{
+                                        display: {
+                                            xs: !selectedProject
+                                                ? 'block'
+                                                : 'none',
+                                            sm: 'block',
+                                        },
+                                    }}>
+                                    <ProjectList
+                                        projects={projects}
+                                        selectedProjectID={selectedProjectID}
+                                        onClickNew={() =>
+                                            openProjectForm('create')
+                                        }
+                                        onSelectProject={setSelectedProjectID}
+                                    />
+                                </Box>
+                            </Grid>
+                            {!!selectedProject && (
+                                <Grid item xs={12} sm={7} md={8}>
+                                    <ProjectDetails
+                                        selectedProject={selectedProject}
+                                        onClickUpdate={() =>
+                                            openProjectForm('update')
+                                        }
+                                        handleDeleteProject={
+                                            handleDeleteProject
+                                        }
+                                        onClickNewApiKey={onClickGetNewApiKey}
+                                        showProjectList={showProjectList}
+                                        onClickNewPaymentSignatureSecret={
+                                            onClickGetNewPaymentSignatureSecret
+                                        }
+                                    />
+                                </Grid>
+                            )}
                         </Grid>
                     )}
-                </Grid>
+                </>
             )}
-            <ProjectForm
-                type={projectFormType}
-                open={projectFormOpen}
-                onClose={() => setProjectFormOpen(false)}
-                payoutAddresses={payoutAddresses}
-                projectData={
-                    projectFormType === 'update' ? selectedProject : undefined
-                }
-                setApiKey={setApiKey}
-            />
+            {projectFormOpen && (
+                <ProjectForm
+                    type={projectFormType}
+                    open={projectFormOpen}
+                    onClose={() => setProjectFormOpen(false)}
+                    payoutAddresses={payoutAddresses}
+                    projectData={
+                        projectFormType === 'update'
+                            ? selectedProject
+                            : undefined
+                    }
+                    setApiKey={setApiKey}
+                    setSelectedProjectID={setSelectedProjectID}
+                />
+            )}
             <ApiKeyDialog
                 open={
                     !!apiKey.apiKey.length ||
