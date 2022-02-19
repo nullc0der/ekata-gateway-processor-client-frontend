@@ -2,16 +2,15 @@ import React, { useState } from 'react'
 
 import get from 'lodash/get'
 
-import Avatar from '@mui/material/Avatar'
-import Icon from '@mui/material/Icon'
 import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import Paper from '@mui/material/Paper'
 import Alert from '@mui/material/Alert'
+import { useMediaQuery, useTheme, Collapse } from '@mui/material'
+import { TransitionGroup } from 'react-transition-group'
 
+import Logo from 'assets/image/logo.svg'
 import { forgotPassword } from 'api/auth'
 
 const ForgotPassword = () => {
@@ -19,6 +18,9 @@ const ForgotPassword = () => {
     const [emailError, setEmailError] = useState('')
     const [forgotPasswordError, setForgotPasswordError] = useState('')
     const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState(false)
+    const theme = useTheme()
+    const isSM = useMediaQuery(theme.breakpoints.down('md'))
+    const isXS = useMediaQuery(theme.breakpoints.down('sm'))
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -52,30 +54,53 @@ const ForgotPassword = () => {
     }
 
     return (
-        <Container
-            maxWidth="xs"
-            sx={{ display: 'flex', alignItems: 'center', minHeight: '100vh' }}>
-            <Paper
+        <Box
+            sx={{
+                display: 'flex',
+                height: '100vh',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}>
+            <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
-                    padding: 4,
-                    backgroundImage: 'none',
-                }}
-                elevation={6}>
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <Icon>lock-outline</Icon>
-                </Avatar>
-                <Typography component="h5">
-                    Type your email address below to get a link to reset your
-                    password
-                </Typography>
+                    width: isSM ? '80%' : '40%',
+                }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}>
+                    <img
+                        src={Logo}
+                        alt="Logo"
+                        style={{ width: '64px', height: '64px' }}
+                    />
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'end',
+                        }}>
+                        <Typography component="h1" variant="h5" color="primary">
+                            Reset Password
+                        </Typography>
+                        <Typography
+                            component="span"
+                            display={isXS ? 'none' : 'inline'}
+                            variant="subtitle2">
+                            Type your email address below to get a link to reset
+                            your password
+                        </Typography>
+                    </Box>
+                </Box>
                 <Box
                     component="form"
                     noValidate
                     onSubmit={handleSubmit}
-                    sx={{ mt: 1 }}>
+                    sx={{ mt: 2 }}>
                     <TextField
                         required
                         fullWidth
@@ -97,20 +122,26 @@ const ForgotPassword = () => {
                         sx={{ my: 3 }}>
                         Submit
                     </Button>
-                    {!!forgotPasswordError && (
-                        <Alert severity="error" sx={{ mb: 3 }}>
-                            {forgotPasswordError}
-                        </Alert>
-                    )}
-                    {!!forgotPasswordSuccess && (
-                        <Alert severity="success" sx={{ mb: 3 }}>
-                            Please check your inbox, you should get an email
-                            with reset password link
-                        </Alert>
-                    )}
+                    <TransitionGroup>
+                        {!!forgotPasswordError && (
+                            <Collapse>
+                                <Alert severity="error" sx={{ mb: 3 }}>
+                                    {forgotPasswordError}
+                                </Alert>
+                            </Collapse>
+                        )}
+                        {!!forgotPasswordSuccess && (
+                            <Collapse>
+                                <Alert severity="success" sx={{ mb: 3 }}>
+                                    Please check your inbox, you should get an
+                                    email with reset password link
+                                </Alert>
+                            </Collapse>
+                        )}
+                    </TransitionGroup>
                 </Box>
-            </Paper>
-        </Container>
+            </Box>
+        </Box>
     )
 }
 
