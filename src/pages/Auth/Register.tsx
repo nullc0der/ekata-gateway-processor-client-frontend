@@ -5,20 +5,21 @@ import { Link as RouterLink } from 'react-router-dom'
 import get from 'lodash/get'
 import isEmpty from 'lodash/isEmpty'
 
-import Avatar from '@mui/material/Avatar'
-import Icon from '@mui/material/Icon'
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
-import Link from '@mui/material/Link'
-import Paper from '@mui/material/Paper'
-import Alert from '@mui/material/Alert'
-
 import { useMatomo } from '@datapunt/matomo-tracker-react'
 
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import Grid from '@mui/material/Grid'
+import Link from '@mui/material/Link'
+import Alert from '@mui/material/Alert'
+import { LoadingButton } from '@mui/lab'
+import { useMediaQuery, useTheme, Collapse, Icon } from '@mui/material'
+import { TransitionGroup } from 'react-transition-group'
+
+import EnhancedPasswordField from 'components/EnhancedPasswordField'
+import Logo from 'assets/image/logo.svg'
+import LoginSVG from 'assets/image/login.svg'
 import { register } from 'api/auth'
 
 const Register = () => {
@@ -39,21 +40,34 @@ const Register = () => {
     })
     const [registerError, setRegisterError] = useState('')
     const [registerSuccess, setRegisterSuccess] = useState(false)
+    const [signingUp, setSigningUp] = useState(false)
+    const theme = useTheme()
+    const isSM = useMediaQuery(theme.breakpoints.down('md'))
+    const isXS = useMediaQuery(theme.breakpoints.down('sm'))
 
     useEffect(() => {
         trackPageView({})
     }, [trackPageView])
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (id: string, value: string) => {
         setFormData((prevState) => ({
             ...prevState,
-            [event.target.id]: event.target.value,
+            [id]: value,
         }))
+        const hasError = get(formError, id, '').length
+        if (hasError) {
+            setFormError((prevState) => ({
+                ...prevState,
+                [id]: '',
+            }))
+        }
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        setSigningUp(true)
         register(formData).then((response) => {
+            setSigningUp(false)
             if (response.ok) {
                 setFormError({
                     email: '',
@@ -117,132 +131,233 @@ const Register = () => {
     }
 
     return (
-        <Container
-            maxWidth="xs"
-            sx={{ display: 'flex', alignItems: 'center', minHeight: '100vh' }}>
-            <Paper
+        <Box
+            sx={{
+                display: 'flex',
+                height: '100vh',
+            }}>
+            <Box
                 sx={{
                     display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flex: isSM ? 1 : 70,
+                }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: isSM ? (isXS ? '80%' : '60%') : '50%',
+                    }}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                        }}>
+                        <img
+                            src={Logo}
+                            alt="Logo"
+                            style={{ width: '64px', height: '64px' }}
+                        />
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'end',
+                            }}>
+                            <Typography
+                                component="h1"
+                                variant="h4"
+                                color="primary">
+                                Signup
+                            </Typography>
+                            <Typography
+                                component="span"
+                                display={isXS ? 'none' : 'inline'}
+                                variant="subtitle2">
+                                Submit following form to complete signup process
+                            </Typography>
+                        </Box>
+                    </Box>
+                    <Box
+                        component="form"
+                        noValidate
+                        onSubmit={handleSubmit}
+                        sx={{ mt: 1 }}>
+                        <Grid container>
+                            <Grid item xs={12} sm={6} pb={2} pr={!isSM ? 2 : 0}>
+                                <TextField
+                                    autoComplete="given-name"
+                                    name="firstName"
+                                    fullWidth
+                                    id="first_name"
+                                    label="First Name"
+                                    error={!!formError.first_name}
+                                    helperText={formError.first_name}
+                                    value={formData.first_name}
+                                    onChange={(
+                                        event: React.ChangeEvent<HTMLInputElement>
+                                    ) =>
+                                        handleInputChange(
+                                            event.target.id,
+                                            event.target.value
+                                        )
+                                    }
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} pb={2}>
+                                <TextField
+                                    fullWidth
+                                    id="last_name"
+                                    label="Last Name"
+                                    name="lastName"
+                                    autoComplete="family-name"
+                                    error={!!formError.last_name}
+                                    helperText={formError.last_name}
+                                    value={formData.last_name}
+                                    onChange={(
+                                        event: React.ChangeEvent<HTMLInputElement>
+                                    ) =>
+                                        handleInputChange(
+                                            event.target.id,
+                                            event.target.value
+                                        )
+                                    }
+                                />
+                            </Grid>
+                            <Grid item xs={12} pb={2}>
+                                <TextField
+                                    autoComplete="username"
+                                    name="userName"
+                                    required
+                                    fullWidth
+                                    id="username"
+                                    label="Username"
+                                    error={!!formError.username}
+                                    helperText={formError.username}
+                                    value={formData.username}
+                                    onChange={(
+                                        event: React.ChangeEvent<HTMLInputElement>
+                                    ) =>
+                                        handleInputChange(
+                                            event.target.id,
+                                            event.target.value
+                                        )
+                                    }
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    id="email"
+                                    label="Email Address"
+                                    name="email"
+                                    autoComplete="email"
+                                    error={!!formError.email}
+                                    helperText={formError.email}
+                                    value={formData.email}
+                                    onChange={(
+                                        event: React.ChangeEvent<HTMLInputElement>
+                                    ) =>
+                                        handleInputChange(
+                                            event.target.id,
+                                            event.target.value
+                                        )
+                                    }
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <EnhancedPasswordField
+                                    required
+                                    fullWidth
+                                    name="password"
+                                    label="Password"
+                                    id="password"
+                                    error={!!formError.password}
+                                    helperText={formError.password}
+                                    showPasswordStrength={true}
+                                    onChange={(id: string, value: string) =>
+                                        handleInputChange(id, value)
+                                    }
+                                />
+                            </Grid>
+                        </Grid>
+                        <LoadingButton
+                            type="submit"
+                            fullWidth
+                            sx={{ my: 3 }}
+                            loading={signingUp}
+                            loadingPosition="end"
+                            endIcon={<Icon>arrow_forward</Icon>}
+                            variant="contained"
+                            disableElevation>
+                            Sign Up
+                        </LoadingButton>
+                        <TransitionGroup>
+                            {!!registerError && (
+                                <Collapse>
+                                    <Alert severity="error" sx={{ mb: 3 }}>
+                                        {registerError}
+                                    </Alert>
+                                </Collapse>
+                            )}
+                            {!!registerSuccess && (
+                                <Collapse>
+                                    <Alert severity="success" sx={{ mb: 3 }}>
+                                        You are registered successfully, please
+                                        check your inbox, you should get an
+                                        email to verify your email address
+                                    </Alert>
+                                </Collapse>
+                            )}
+                        </TransitionGroup>
+                        <Grid container justifyContent="flex-end">
+                            <Grid item>
+                                <Link
+                                    component={RouterLink}
+                                    to="/login"
+                                    variant="body2">
+                                    {'Already have an account? Login'}
+                                </Link>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Box>
+            </Box>
+            <Box
+                sx={{
+                    flex: 30,
+                    display: isSM ? 'none' : 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    padding: 4,
-                    backgroundImage: 'none',
-                }}
-                elevation={6}>
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <Icon>lock-outline</Icon>
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                    Register
+                    justifyContent: 'center',
+                    px: 2,
+                    borderLeft: '1px solid',
+                    borderColor:
+                        theme.palette.mode === 'dark'
+                            ? theme.palette.grey[800]
+                            : theme.palette.grey[200],
+                }}>
+                <img src={LoginSVG} style={{ width: '250px' }} alt="Login" />
+                <Typography
+                    component="span"
+                    variant="h4"
+                    color="primary"
+                    mt={1}>
+                    Welcome
                 </Typography>
-                <Box
-                    component="form"
-                    noValidate
-                    onSubmit={handleSubmit}
-                    sx={{ mt: 1 }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                autoComplete="given-name"
-                                name="firstName"
-                                fullWidth
-                                id="first_name"
-                                label="First Name"
-                                error={!!formError.first_name}
-                                helperText={formError.first_name}
-                                value={formData.first_name}
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                id="last_name"
-                                label="Last Name"
-                                name="lastName"
-                                autoComplete="family-name"
-                                error={!!formError.last_name}
-                                helperText={formError.last_name}
-                                value={formData.last_name}
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                autoComplete="username"
-                                name="userName"
-                                required
-                                fullWidth
-                                id="username"
-                                label="Username"
-                                error={!!formError.username}
-                                helperText={formError.username}
-                                value={formData.username}
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
-                                id="email"
-                                label="Email Address"
-                                name="email"
-                                autoComplete="email"
-                                error={!!formError.email}
-                                helperText={formError.email}
-                                value={formData.email}
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
-                                name="password"
-                                label="Password"
-                                type="password"
-                                id="password"
-                                autoComplete="current-password"
-                                error={!!formError.password}
-                                helperText={formError.password}
-                                value={formData.password}
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                    </Grid>
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ my: 3 }}>
-                        Sign Up
-                    </Button>
-                    {!!registerError && (
-                        <Alert severity="error" sx={{ mb: 3 }}>
-                            {registerError}
-                        </Alert>
-                    )}
-                    {!!registerSuccess && (
-                        <Alert severity="success" sx={{ mb: 3 }}>
-                            You are registered successfully, please check your
-                            inbox, you should get an email to verify your email
-                            address
-                        </Alert>
-                    )}
-                </Box>
-                <Grid container justifyContent="flex-end">
-                    <Grid item>
-                        <Link
-                            component={RouterLink}
-                            to={'/login'}
-                            variant="body2">
-                            Already have an account? Sign in
-                        </Link>
-                    </Grid>
-                </Grid>
-            </Paper>
-        </Container>
+                <Typography
+                    component="span"
+                    variant="body1"
+                    color="primary"
+                    mt={1}>
+                    Signup to create your project, monitor payments, check
+                    payouts etc...
+                </Typography>
+            </Box>
+        </Box>
     )
 }
 

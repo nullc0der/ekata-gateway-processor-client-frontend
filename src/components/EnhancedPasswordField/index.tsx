@@ -33,10 +33,10 @@ interface EnhancedPasswordFieldProps {
     label: string
     error: boolean
     helperText: string
+    showPasswordStrength: boolean
     required?: boolean
     fullWidth?: boolean
     name?: string
-    showPasswordStrength: boolean
     onChange: (id: string, value: string) => void
 }
 
@@ -118,59 +118,62 @@ const EnhancedPasswordField = (props: EnhancedPasswordFieldProps) => {
                     ),
                 }}
             />
-            {props.showPasswordStrength && (
-                <>
-                    <Typography variant="body2" mt={1}>
-                        Password Strength
-                    </Typography>
-                    <LinearProgress
-                        sx={(theme) => ({
-                            height: 10,
-                            borderRadius: 5,
-                            [`&.${linearProgressClasses.colorPrimary}`]: {
-                                backgroundColor:
-                                    theme.palette.grey[
-                                        theme.palette.mode === 'light'
-                                            ? 200
-                                            : 800
-                                    ],
-                            },
-                            [`& .${linearProgressClasses.bar}`]: {
+            <TransitionGroup>
+                {props.showPasswordStrength && value && (
+                    <Collapse>
+                        <Typography variant="body2" mt={1}>
+                            Password Strength
+                        </Typography>
+                        <LinearProgress
+                            sx={(theme) => ({
+                                height: 10,
                                 borderRadius: 5,
-                                backgroundColor: getPasswordStrengthBarColor(
-                                    passwordScore,
-                                    theme
-                                ),
-                            },
-                        })}
-                        variant="determinate"
-                        value={((passwordScore + 1) * 100) / 5}
-                    />
-                    <TransitionGroup>
-                        {passwordFeedback?.warning && (
-                            <Collapse>
-                                <Typography
-                                    variant="subtitle1"
-                                    color="grey.600"
-                                    component="p">
-                                    {passwordFeedback.warning}
-                                </Typography>
-                            </Collapse>
-                        )}
-                        {passwordFeedback?.suggestions &&
-                            passwordFeedback.suggestions.map((x, i) => (
-                                <Collapse key={i}>
+                                [`&.${linearProgressClasses.colorPrimary}`]: {
+                                    backgroundColor:
+                                        theme.palette.grey[
+                                            theme.palette.mode === 'light'
+                                                ? 200
+                                                : 800
+                                        ],
+                                },
+                                [`& .${linearProgressClasses.bar}`]: {
+                                    borderRadius: 5,
+                                    backgroundColor:
+                                        getPasswordStrengthBarColor(
+                                            passwordScore,
+                                            theme
+                                        ),
+                                },
+                            })}
+                            variant="determinate"
+                            value={((passwordScore + 1) * 100) / 5}
+                        />
+                        <TransitionGroup>
+                            {passwordFeedback?.warning && (
+                                <Collapse>
                                     <Typography
-                                        component="p"
-                                        variant="subtitle2"
-                                        color="grey.500">
-                                        {x}
+                                        variant="subtitle1"
+                                        color="grey.600"
+                                        component="p">
+                                        {passwordFeedback.warning}
                                     </Typography>
                                 </Collapse>
-                            ))}
-                    </TransitionGroup>
-                </>
-            )}
+                            )}
+                            {passwordFeedback?.suggestions &&
+                                passwordFeedback.suggestions.map((x, i) => (
+                                    <Collapse key={i}>
+                                        <Typography
+                                            component="p"
+                                            variant="subtitle2"
+                                            color="grey.500">
+                                            {x}
+                                        </Typography>
+                                    </Collapse>
+                                ))}
+                        </TransitionGroup>
+                    </Collapse>
+                )}
+            </TransitionGroup>
         </Box>
     )
 }

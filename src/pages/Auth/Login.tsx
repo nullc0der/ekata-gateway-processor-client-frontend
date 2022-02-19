@@ -10,11 +10,12 @@ import jwt_decode from 'jwt-decode'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
-import { useMediaQuery, useTheme } from '@mui/material'
+import LoadingButton from '@mui/lab/LoadingButton'
+import { useMediaQuery, useTheme, Collapse, Icon } from '@mui/material'
+import { TransitionGroup } from 'react-transition-group'
 
 import { useMatomo } from '@datapunt/matomo-tracker-react'
 
@@ -23,11 +24,11 @@ import { useAppDispatch, useAppSelector } from 'hooks/reduxHooks'
 import { authenticateUser } from 'store/authSlice'
 import { isTokenNotExpired } from 'utils/auth'
 import HelpTooltip from 'components/HelpTooltip'
+import EnhancedPasswordField from 'components/EnhancedPasswordField'
 import Logo from 'assets/image/logo.svg'
 import LoginSVG from 'assets/image/login.svg'
-import EnhancedPasswordField from 'components/EnhancedPasswordField'
 
-// TODO: Add loader and check layout and check password strength properly and password strength show flag
+// TODO: form validation whether it resets and add again if new error
 
 const Login = () => {
     const dispatch = useAppDispatch()
@@ -46,7 +47,9 @@ const Login = () => {
     })
     const [twoFactorCodeRequired, setTwoFactorCodeRequired] = useState(false)
     const [loginError, setLoginError] = useState('')
+    const [loggingIn, setLoggingIn] = useState(false)
     const theme = useTheme()
+    const isSM = useMediaQuery(theme.breakpoints.down('md'))
     const isXS = useMediaQuery(theme.breakpoints.down('sm'))
 
     let navigateTo = location.state?.from?.pathname || '/projects'
@@ -60,12 +63,21 @@ const Login = () => {
             ...prevState,
             [id]: value,
         }))
+        const hasError = get(formError, id, '').length
+        if (hasError) {
+            setFormError((prevState) => ({
+                ...prevState,
+                [id]: '',
+            }))
+        }
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        setLoggingIn(true)
         login(formData.email, formData.password, formData.twoFactorCode).then(
             (response) => {
+                setLoggingIn(false)
                 if (response.ok) {
                     setLoginError('')
                     setFormError({ email: '', password: '', twoFactorCode: '' })
@@ -153,13 +165,13 @@ const Login = () => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    flex: 70,
+                    flex: isSM ? 1 : 70,
                 }}>
                 <Box
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        width: '40%',
+                        width: isSM ? (isXS ? '80%' : '60%') : '40%',
                     }}>
                     <Box
                         sx={{
@@ -184,7 +196,10 @@ const Login = () => {
                                 color="primary">
                                 Login
                             </Typography>
-                            <Typography component="span" variant="subtitle2">
+                            <Typography
+                                component="span"
+                                display={isXS ? 'none' : 'inline'}
+                                variant="subtitle2">
                                 Enter email and password below to continue
                             </Typography>
                         </Box>
@@ -227,53 +242,62 @@ const Login = () => {
                                 onChangeFormData(id, value)
                             }
                         />
-                        {!!twoFactorCodeRequired && (
-                            <>
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    name="twoFactor"
-                                    label="Two Factor Code"
-                                    id="twoFactorCode"
-                                    value={formData.twoFactorCode}
-                                    error={!!formError.twoFactorCode}
-                                    helperText={formError.twoFactorCode}
-                                    onChange={(
-                                        event: React.ChangeEvent<HTMLInputElement>
-                                    ) =>
-                                        onChangeFormData(
-                                            event.target.id,
-                                            event.target.value
-                                        )
-                                    }
-                                />
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        alignItems: 'center',
-                                    }}>
-                                    <Typography variant="subtitle2">
-                                        Lost access to authenticator device{' '}
-                                    </Typography>
-                                    <HelpTooltip title="Use one of your recovery code" />
-                                </Box>
-                            </>
-                        )}
-                        <Button
+                        <TransitionGroup>
+                            {!!twoFactorCodeRequired && (
+                                <Collapse>
+                                    <TextField
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        name="twoFactor"
+                                        label="Two Factor Code"
+                                        id="twoFactorCode"
+                                        value={formData.twoFactorCode}
+                                        error={!!formError.twoFactorCode}
+                                        helperText={formError.twoFactorCode}
+                                        onChange={(
+                                            event: React.ChangeEvent<HTMLInputElement>
+                                        ) =>
+                                            onChangeFormData(
+                                                event.target.id,
+                                                event.target.value
+                                            )
+                                        }
+                                    />
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                            alignItems: 'center',
+                                        }}>
+                                        <Typography variant="subtitle2">
+                                            Lost access to authenticator device{' '}
+                                        </Typography>
+                                        <HelpTooltip title="Use one of your recovery code" />
+                                    </Box>
+                                </Collapse>
+                            )}
+                        </TransitionGroup>
+                        <LoadingButton
                             type="submit"
                             fullWidth
-                            variant="contained"
                             sx={{ my: 3 }}
+                            loading={loggingIn}
+                            loadingPosition="end"
+                            endIcon={<Icon>arrow_forward</Icon>}
+                            variant="contained"
                             disableElevation>
                             Sign In
-                        </Button>
-                        {!!loginError && (
-                            <Alert severity="error" sx={{ mb: 3 }}>
-                                {loginError}
-                            </Alert>
-                        )}
+                        </LoadingButton>
+                        <TransitionGroup>
+                            {!!loginError && (
+                                <Collapse>
+                                    <Alert severity="error" sx={{ mb: 3 }}>
+                                        {loginError}
+                                    </Alert>
+                                </Collapse>
+                            )}
+                        </TransitionGroup>
                     </Box>
                     <Grid container justifyContent="space-between">
                         <Grid item>
@@ -298,18 +322,22 @@ const Login = () => {
             <Box
                 sx={{
                     flex: 30,
-                    display: isXS ? 'none' : 'flex',
+                    display: isSM ? 'none' : 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderLeft: '1px solid #eee',
+                    borderLeft: '1px solid',
+                    borderColor:
+                        theme.palette.mode === 'dark'
+                            ? theme.palette.grey[800]
+                            : theme.palette.grey[200],
                 }}>
                 <img src={LoginSVG} style={{ width: '250px' }} alt="Login" />
                 <Typography
                     component="span"
-                    variant="h3"
+                    variant="h4"
                     color="primary"
-                    mt={1}>
+                    mt={4}>
                     Hi, Welcome Back
                 </Typography>
             </Box>
