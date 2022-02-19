@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
     Container,
     TableHead,
@@ -15,6 +15,7 @@ import {
 import { format } from 'date-fns'
 import { useMatomo } from '@datapunt/matomo-tracker-react'
 
+import LoadingFallback from 'components/LoadingFallback'
 import PageHeader from 'components/PageHeader'
 import { useAppDispatch, useAppSelector } from 'hooks/reduxHooks'
 import { getPayouts } from 'api/payout'
@@ -73,6 +74,7 @@ function PayoutTableHead() {
 }
 
 const Payouts = () => {
+    const [loadingPayouts, setLoadingPayouts] = useState(false)
     const payouts = useAppSelector((state) => state.payouts.payoutDatas)
     const dispatch = useAppDispatch()
     const { trackPageView } = useMatomo()
@@ -82,14 +84,18 @@ const Payouts = () => {
     }, [trackPageView])
 
     useEffect(() => {
+        setLoadingPayouts(true)
         getPayouts().then((response) => {
+            setLoadingPayouts(false)
             if (response.ok && response.data) {
                 dispatch(updatePayoutDatas(response.data))
             }
         })
     }, [dispatch])
 
-    return (
+    return loadingPayouts ? (
+        <LoadingFallback />
+    ) : (
         <Container maxWidth="lg">
             <PageHeader />
             <Box sx={{ width: '100%' }}>

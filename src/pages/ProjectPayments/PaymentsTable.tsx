@@ -18,6 +18,7 @@ import {
 } from '@mui/material'
 import { format } from 'date-fns'
 
+import LoadingFallback from 'components/LoadingFallback'
 import { useAppDispatch, useAppSelector } from 'hooks/reduxHooks'
 import { updateProjectPayments } from 'store/projectPaymentsSlice'
 import { getProjectsPayment } from 'api/project'
@@ -183,12 +184,14 @@ export default function PaymentsTable({
     const [txIDsForPayment, setTxIDsForPayment] = useState('')
     const [search, setSearch] = useState('')
     const [currencyName, setCurrencyName] = useState('')
+    const [loadingPayments, setLoadingPayments] = useState(false)
 
     const paymentDatas = projectPayments.payments
     const totalPayments = projectPayments.totalPayments
 
     useEffect(() => {
         if (search.length && search.length <= 3) return
+        setLoadingPayments(true)
         getProjectsPayment(
             selectedProjectID,
             25,
@@ -196,6 +199,7 @@ export default function PaymentsTable({
             search,
             currencyName
         ).then((response) => {
+            setLoadingPayments(false)
             if (response.ok && response.data) {
                 dispatch(
                     updateProjectPayments({
@@ -222,7 +226,9 @@ export default function PaymentsTable({
         setTxIDsForPayment('')
     }
 
-    return !!paymentDatas ? (
+    return loadingPayments ? (
+        <LoadingFallback />
+    ) : !!paymentDatas ? (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
                 <PaymentTableToolbar
