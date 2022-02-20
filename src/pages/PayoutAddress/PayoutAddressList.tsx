@@ -42,7 +42,7 @@ const PayoutAddressList = ({
                                     ? selectedPayoutAddress.id === x.id
                                     : false
                             }
-                            sx={{ borderRadius: 2 }}>
+                            sx={{ borderRadius: 2, my: 1 }}>
                             <ListItemButton
                                 sx={{ borderRadius: 2 }}
                                 onClick={() => onClickPayoutAddress(x)}>
