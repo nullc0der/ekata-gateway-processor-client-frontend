@@ -14,7 +14,7 @@ import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
 import LoadingButton from '@mui/lab/LoadingButton'
-import { useTheme, Collapse, Icon } from '@mui/material'
+import { useTheme, Collapse, Icon, useMediaQuery } from '@mui/material'
 import { TransitionGroup } from 'react-transition-group'
 
 import { useMatomo } from '@datapunt/matomo-tracker-react'
@@ -47,6 +47,7 @@ const Login = () => {
     const [loginError, setLoginError] = useState('')
     const [loggingIn, setLoggingIn] = useState(false)
     const theme = useTheme()
+    const isMD = useMediaQuery(theme.breakpoints.down('lg'))
 
     let navigateTo = location.state?.from?.pathname || '/projects'
 
@@ -167,7 +168,7 @@ const Login = () => {
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        width: { xs: '80%', sm: '60%', md: '40%' },
+                        width: { xs: '80%', sm: '60%', lg: '50%', xl: '40%' },
                     }}>
                     <Box
                         sx={{
@@ -331,7 +332,7 @@ const Login = () => {
                 <img src={LoginSVG} style={{ width: '250px' }} alt="Login" />
                 <Typography
                     component="span"
-                    variant="h4"
+                    variant={isMD ? 'h5' : 'h4'}
                     color="primary"
                     mt={4}>
                     Hi, Welcome Back

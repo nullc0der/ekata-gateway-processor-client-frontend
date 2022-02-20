@@ -348,7 +348,7 @@ const Register = () => {
                     component="span"
                     variant="h4"
                     color="primary"
-                    mt={1}>
+                    mt={2}>
                     Welcome
                 </Typography>
                 <Typography

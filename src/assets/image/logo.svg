@@ -2,34 +2,7 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg width="1370.9mm" height="1401.1mm" version="1.1" viewBox="0 0 1370.9 1401.1" xmlns="http://www.w3.org/2000/svg">
  <defs>
-  <filter id="filter146667" x="-.56762" y="-1.4651" width="2.2772" height="4.2964" color-interpolation-filters="sRGB">
-   <feFlood flood-color="rgb(0,0,0)" flood-opacity=".49804" result="flood"/>
-   <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
-   <feGaussianBlur in="composite1" result="blur" stdDeviation="10"/>
-   <feOffset dx="6" dy="6" result="offset"/>
-   <feComposite in="SourceGraphic" in2="offset" result="fbSourceGraphic"/>
-   <feColorMatrix in="fbSourceGraphic" result="fbSourceGraphicAlpha" values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"/>
-   <feFlood flood-color="rgb(0,0,0)" flood-opacity=".49804" in="fbSourceGraphic" result="flood"/>
-   <feComposite in="flood" in2="fbSourceGraphic" operator="in" result="composite1"/>
-   <feGaussianBlur in="composite1" result="blur" stdDeviation="10"/>
-   <feOffset dx="6" dy="6" result="offset"/>
-   <feComposite in="fbSourceGraphic" in2="offset" result="composite2"/>
-  </filter>
-  <filter id="filter146715" x="-2.0906" y="-1.347" width="5.7038" height="4.0308" color-interpolation-filters="sRGB">
-   <feFlood flood-color="rgb(0,0,0)" flood-opacity=".49804" result="flood"/>
-   <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
-   <feGaussianBlur in="composite1" result="blur" stdDeviation="10"/>
-   <feOffset dx="6" dy="6" result="offset"/>
-   <feComposite in="SourceGraphic" in2="offset" result="composite2"/>
-  </filter>
   <filter id="filter747" x="-.40167" y="-.25518" width="1.887" height="1.5635" color-interpolation-filters="sRGB">
-   <feFlood flood-color="rgb(0,0,0)" flood-opacity=".23137" result="flood"/>
-   <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
-   <feGaussianBlur in="composite1" result="blur" stdDeviation="6"/>
-   <feOffset dx="3" dy="3" result="offset"/>
-   <feComposite in="SourceGraphic" in2="offset" result="composite2"/>
-  </filter>
-  <filter id="filter861" x="-.26329" y="-.23364" width="1.5814" height="1.5159" color-interpolation-filters="sRGB">
    <feFlood flood-color="rgb(0,0,0)" flood-opacity=".23137" result="flood"/>
    <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
    <feGaussianBlur in="composite1" result="blur" stdDeviation="6"/>
@@ -38,9 +11,9 @@
   </filter>
  </defs>
  <g transform="translate(601.39 571.15)">
-  <text transform="matrix(7.7866 0 0 8.2192 -514.23 -922.13)" x="64.335945" y="134.12711" fill="#000000" filter="url(#filter146715)" font-family="sans-serif" font-size="24.44px" stroke-width="4.5825" style="line-height:1.25" xml:space="preserve"><tspan x="64.335945" y="134.12711" fill="#ffffff" font-size="24.44px" stroke-width="4.5825">E</tspan></text>
-  <path transform="matrix(15.85 0 0 14.995 -1192.2 -450.99)" d="m106.02 52.071c-0.74339 1.35-24.835 15.918-26.376 15.949-1.5409 0.031217-26.203-13.549-27.001-14.868-0.79746-1.3188-1.3677-29.467-0.62435-30.817s24.835-15.918 26.376-15.949c1.5409-0.031217 26.203 13.549 27.001 14.868 0.79747 1.3188 1.3677 29.467 0.62435 30.817z" fill="#4ade80" fill-rule="evenodd" filter="url(#filter861)"/>
-  <text transform="matrix(7.7866 0 0 8.2192 -681.15 -832.8)" x="73.373734" y="144.75311" fill="#ffffff" filter="url(#filter747)" font-family="Roboto" font-size="79.375px" stroke-width="4.5825" style="line-height:1.25" xml:space="preserve"><tspan x="73.373734" y="144.75311" fill="#ffffff" font-family="Roboto" font-size="79.375px" stroke-width="4.5825">E</tspan></text>
-  <text transform="matrix(.97333 0 0 1.0274 25.195 4.7277)" x="97.858742" y="146.93646" fill="#4ade80" filter="url(#filter146667)" font-family="sans-serif" font-size="42.333px" stroke-width="4.5825" style="line-height:1.25" xml:space="preserve"><tspan x="97.858742" y="146.93646" fill="#4ade80" font-size="42.333px" stroke-width="4.5825"/></text>
+  <path d="m506.5 327.81c-11.783 20.243-393.63 238.69-418.06 239.16-24.423 0.4681-415.32-203.17-427.97-222.95-12.64-19.775-21.678-441.86-9.896-462.1 11.782-20.243 393.63-238.69 418.06-239.16 24.423-0.4681 415.32 203.17 427.97 222.95 12.64 19.775 21.678 441.86 9.896 462.1z" fill="#4ade80" fill-rule="evenodd" stroke-width="15.417"/>
+  <g transform="matrix(7.4843 0 0 8.253 -658.01 -859.35)" fill="#fff" filter="url(#filter747)" stroke-width="4.5825" aria-label="E">
+   <path d="m79.924 144.75v-56.431h35.463v6.1237h-27.983v18.138h24.417v6.0849h-24.417v19.999h28.37v6.0849z"/>
+  </g>
  </g>
 </svg>
