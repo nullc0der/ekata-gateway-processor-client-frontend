@@ -13,6 +13,7 @@ import {
     DialogContentText,
     DialogActions,
 } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 import get from 'lodash/get'
 
 import { PayoutAddressData } from 'store/payoutAddressSlice'
@@ -28,10 +29,12 @@ import { updateSnackBar } from 'store/snackBarSlice'
 interface PayoutAddressUpdateProps {
     payoutAddress: PayoutAddressData
     showPayoutAddressList: () => void
+    setSelectedPayoutAddress?: (payoutAddress?: PayoutAddressData) => void
 }
 
 interface DeletePayoutAddressPopupProps {
     open: boolean
+    deletingPayoutAddress: boolean
     toggleDeleteDialog: () => void
     deletePayoutAddress: () => void
 }
@@ -40,6 +43,7 @@ const DeletePayoutAddressPopup = ({
     open,
     toggleDeleteDialog,
     deletePayoutAddress,
+    deletingPayoutAddress,
 }: DeletePayoutAddressPopupProps) => {
     return (
         <Dialog open={open} onClose={toggleDeleteDialog}>
@@ -53,13 +57,15 @@ const DeletePayoutAddressPopup = ({
                 <Button variant="outlined" onClick={toggleDeleteDialog}>
                     Cancel
                 </Button>
-                <Button
+                <LoadingButton
                     variant="outlined"
                     color="error"
                     onClick={deletePayoutAddress}
-                    startIcon={<Icon>delete</Icon>}>
+                    loading={deletingPayoutAddress}
+                    loadingPosition="end"
+                    endIcon={<Icon>delete</Icon>}>
                     Delete
-                </Button>
+                </LoadingButton>
             </DialogActions>
         </Dialog>
     )
@@ -68,12 +74,15 @@ const DeletePayoutAddressPopup = ({
 const PayoutAddressUpdate = ({
     payoutAddress,
     showPayoutAddressList,
+    setSelectedPayoutAddress,
 }: PayoutAddressUpdateProps) => {
     const dispatch = useAppDispatch()
     const [formData, setFormData] = useState('')
     const [formError, setFormError] = useState('')
     const [updateError, setUpdateError] = useState('')
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const [updatingPayoutAddress, setUpdatingPayoutAddress] = useState(false)
+    const [deletingPayoutAddress, setDeletingPayoutAddress] = useState(false)
 
     useEffect(() => {
         setFormData(payoutAddress.payout_address)
@@ -85,10 +94,12 @@ const PayoutAddressUpdate = ({
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        setUpdatingPayoutAddress(true)
         updatePayoutAddress(payoutAddress.id, {
             payout_address: formData,
             currency_name: payoutAddress.currency_name,
         }).then((response) => {
+            setUpdatingPayoutAddress(false)
             if (response.ok) {
                 setFormError('')
                 setUpdateError('')
@@ -115,7 +126,9 @@ const PayoutAddressUpdate = ({
     }
 
     const handleDelete = () => {
+        setDeletingPayoutAddress(true)
         deletePayoutAddress(payoutAddress.id).then((response) => {
+            setDeletingPayoutAddress(false)
             if (response.ok) {
                 toggleDeleteDialog()
                 dispatch(deletePayoutAddressAction(payoutAddress.id))
@@ -126,6 +139,8 @@ const PayoutAddressUpdate = ({
                     })
                 )
                 showPayoutAddressList()
+                typeof setSelectedPayoutAddress === 'function' &&
+                    setSelectedPayoutAddress(undefined)
             }
         })
     }
@@ -185,13 +200,15 @@ const PayoutAddressUpdate = ({
                         justifyContent="flex-end"
                         sx={{ my: 2 }}
                         spacing={2}>
-                        <Button
-                            type="submit"
+                        <LoadingButton
                             variant="contained"
-                            color="success"
-                            startIcon={<Icon>check</Icon>}>
+                            type="submit"
+                            disableElevation
+                            loading={updatingPayoutAddress}
+                            loadingPosition="end"
+                            endIcon={<Icon>arrow_forward</Icon>}>
                             Update
-                        </Button>
+                        </LoadingButton>
                         <IconButton
                             aria-label="delete"
                             color="error"
@@ -205,6 +222,7 @@ const PayoutAddressUpdate = ({
                 open={deleteDialogOpen}
                 deletePayoutAddress={handleDelete}
                 toggleDeleteDialog={toggleDeleteDialog}
+                deletingPayoutAddress={deletingPayoutAddress}
             />
         </BasicCard>
     )

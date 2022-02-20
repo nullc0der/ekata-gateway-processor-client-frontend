@@ -41,8 +41,10 @@ const PayoutAddressList = ({
                                 selectedPayoutAddress
                                     ? selectedPayoutAddress.id === x.id
                                     : false
-                            }>
+                            }
+                            sx={{ borderRadius: 2 }}>
                             <ListItemButton
+                                sx={{ borderRadius: 2 }}
                                 onClick={() => onClickPayoutAddress(x)}>
                                 <ListItemText
                                     primary={x.currency_name}

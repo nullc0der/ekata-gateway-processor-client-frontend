@@ -5,11 +5,11 @@ import {
     Typography,
     TextField,
     MenuItem,
-    Button,
     Alert,
     IconButton,
     Icon,
 } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 import get from 'lodash/get'
 
 import BasicCard from 'components/BasicCard'
@@ -18,11 +18,13 @@ import { ALLOWED_CURRENCY } from 'appconstants'
 import { useAppDispatch } from 'hooks/reduxHooks'
 import { addPayoutAddress } from 'store/payoutAddressSlice'
 import { updateSnackBar } from 'store/snackBarSlice'
+import { PayoutAddressData } from 'store/payoutAddressSlice'
 
 interface PayoutAddressCreateProps {
     initialAddress?: boolean
     toggleCreateNewForm?: () => void
     showPayoutAddressList?: () => void
+    setSelectedPayoutAddress?: (payoutAddress: PayoutAddressData) => void
 }
 
 const initialFormState: PayoutAddressFormData = {
@@ -39,12 +41,14 @@ const PayoutAddressCreate = ({
     initialAddress,
     toggleCreateNewForm,
     showPayoutAddressList,
+    setSelectedPayoutAddress,
 }: PayoutAddressCreateProps) => {
     const dispatch = useAppDispatch()
     const [formData, setFormData] =
         useState<PayoutAddressFormData>(initialFormState)
     const [formError, setFormError] = useState(initialFormError)
     const [createError, setCreateError] = useState('')
+    const [addressCreating, setAddressCreating] = useState(false)
 
     const handleInputChange = (
         id: string,
@@ -58,7 +62,9 @@ const PayoutAddressCreate = ({
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        setAddressCreating(true)
         createPayoutAddress(formData).then((response) => {
+            setAddressCreating(false)
             if (response.ok) {
                 setCreateError('')
                 setFormError(initialFormError)
@@ -75,9 +81,13 @@ const PayoutAddressCreate = ({
                         typeof toggleCreateNewForm === 'function'
                     ) {
                         toggleCreateNewForm()
+                        typeof setSelectedPayoutAddress === 'function' &&
+                            setSelectedPayoutAddress(response.data)
                     }
                     if (typeof showPayoutAddressList === 'function') {
                         showPayoutAddressList()
+                        typeof setSelectedPayoutAddress === 'function' &&
+                            setSelectedPayoutAddress(response.data)
                     }
                 }
             } else {
@@ -181,14 +191,17 @@ const PayoutAddressCreate = ({
                             {createError}
                         </Alert>
                     )}
-                    <Button
+                    <LoadingButton
+                        variant="contained"
                         type="submit"
                         fullWidth
-                        variant="contained"
+                        sx={{ my: 2 }}
                         disableElevation
-                        sx={{ my: 2 }}>
+                        loading={addressCreating}
+                        loadingPosition="end"
+                        endIcon={<Icon>arrow_forward</Icon>}>
                         Submit
-                    </Button>
+                    </LoadingButton>
                 </Box>
             </Box>
         </BasicCard>

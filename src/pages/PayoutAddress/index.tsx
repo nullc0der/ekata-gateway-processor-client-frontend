@@ -41,8 +41,9 @@ const PayoutAddress = () => {
     }, [])
 
     useEffect(() => {
-        setSelectedPayoutAddress(payoutAddresses[payoutAddresses.length - 1])
-    }, [payoutAddresses])
+        if (payoutAddresses.length && isEmpty(selectedPayoutAddress))
+            setSelectedPayoutAddress(payoutAddresses[0])
+    }, [payoutAddresses, selectedPayoutAddress])
 
     const toggleCreateNewForm = () => {
         if (showCreateNew) {
@@ -102,11 +103,14 @@ const PayoutAddress = () => {
                                     sm: 'block',
                                 },
                             }}>
-                            {!!selectedPayoutAddress && (
+                            {!showCreateNew && !!selectedPayoutAddress && (
                                 <PayoutAddressUpdate
                                     payoutAddress={selectedPayoutAddress}
                                     showPayoutAddressList={() =>
                                         setShowPayoutAddressList(true)
+                                    }
+                                    setSelectedPayoutAddress={
+                                        setSelectedPayoutAddress
                                     }
                                 />
                             )}
@@ -117,6 +121,9 @@ const PayoutAddress = () => {
                                         setShowPayoutAddressList(true)
                                         toggleCreateNewForm()
                                     }}
+                                    setSelectedPayoutAddress={
+                                        setSelectedPayoutAddress
+                                    }
                                 />
                             )}
                         </Box>
