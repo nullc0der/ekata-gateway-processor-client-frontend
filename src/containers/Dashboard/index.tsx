@@ -18,50 +18,54 @@ const Dashboard = () => {
     const [sidebarOpenMobile, setSidebarOpenMobile] = useState(false)
 
     return auth.isAuthenticated && isTokenNotExpired() ? (
-        <Box
-            sx={{
-                display: 'flex',
-                position: 'fixed',
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-            }}>
+        location.pathname === '/' ? (
+            <Navigate replace={true} to="/projects" />
+        ) : (
             <Box
                 sx={{
-                    position: 'absolute',
+                    display: 'flex',
+                    position: 'fixed',
                     top: 0,
                     bottom: 0,
                     left: 0,
-                    width: { xs: 0, md: `${drawerWidth}px` },
-                }}
-                component="nav">
-                <SideBar
-                    sidebarOpenMobile={sidebarOpenMobile}
-                    setSidebarOpenMobile={setSidebarOpenMobile}
-                />
-            </Box>
-            <Box
-                sx={{
-                    position: 'absolute',
-                    top: 0,
-                    bottom: 0,
-                    left: { xs: 0, md: `${drawerWidth}px` },
                     right: 0,
-                    overflowY: 'auto',
-                }}
-                component="main">
-                <TopBar setSidebarOpenMobile={setSidebarOpenMobile} />
+                }}>
                 <Box
                     sx={{
-                        marginTop: `${topbarHeight}px`,
-                        py: 3,
-                    }}>
-                    <Outlet />
+                        position: 'absolute',
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        width: { xs: 0, md: `${drawerWidth}px` },
+                    }}
+                    component="nav">
+                    <SideBar
+                        sidebarOpenMobile={sidebarOpenMobile}
+                        setSidebarOpenMobile={setSidebarOpenMobile}
+                    />
                 </Box>
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: 0,
+                        bottom: 0,
+                        left: { xs: 0, md: `${drawerWidth}px` },
+                        right: 0,
+                        overflowY: 'auto',
+                    }}
+                    component="main">
+                    <TopBar setSidebarOpenMobile={setSidebarOpenMobile} />
+                    <Box
+                        sx={{
+                            marginTop: `${topbarHeight}px`,
+                            py: 3,
+                        }}>
+                        <Outlet />
+                    </Box>
+                </Box>
+                <SnackBarAlert />
             </Box>
-            <SnackBarAlert />
-        </Box>
+        )
     ) : (
         <Navigate to="/login" state={{ from: location }} />
     )

@@ -28,8 +28,6 @@ import EnhancedPasswordField from 'components/EnhancedPasswordField'
 import Logo from 'assets/image/logo.svg'
 import LoginSVG from 'assets/image/login.svg'
 
-// TODO: form validation whether it resets and add again if new error, loading button on api call and placeholder, enhanced password on every password field, login redirection, active project redux, CORS on same origin
-
 const Login = () => {
     const dispatch = useAppDispatch()
     const location = useLocation()
