@@ -58,6 +58,13 @@ const PayoutAddressCreate = ({
             ...prevState,
             [id]: event.target.value,
         }))
+        const hasError = get(formError, id, '').length
+        if (hasError) {
+            setFormError((prevState) => ({
+                ...prevState,
+                [id]: '',
+            }))
+        }
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

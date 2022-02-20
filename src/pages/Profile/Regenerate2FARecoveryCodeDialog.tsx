@@ -11,7 +11,9 @@ import {
     TextField,
     DialogActions,
     Button,
+    Icon,
 } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 
 import { generateNewRecoveryCode } from 'api/user'
 
@@ -32,6 +34,7 @@ const Regenerate2FARecoveryCodeDialog = ({
     const [formError, setFormError] = useState({
         password: '',
     })
+    const [codeGenerating, setCodeGenerating] = useState(false)
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prevState) => ({
@@ -44,7 +47,9 @@ const Regenerate2FARecoveryCodeDialog = ({
         event: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLElement>
     ) => {
         event.preventDefault()
+        setCodeGenerating(true)
         generateNewRecoveryCode(formData.password).then((response) => {
+            setCodeGenerating(false)
             if (response.ok) {
                 setUser2FARecoveryCodes(
                     get(response.data, 'recovery_codes', [])
@@ -105,9 +110,14 @@ const Regenerate2FARecoveryCodeDialog = ({
                 <Button variant="outlined" onClick={onClose}>
                     Cancel
                 </Button>
-                <Button variant="outlined" onClick={handlePasswordSubmit}>
+                <LoadingButton
+                    variant="outlined"
+                    loading={codeGenerating}
+                    loadingPosition="end"
+                    onClick={handlePasswordSubmit}
+                    endIcon={<Icon>arrow_forward</Icon>}>
                     Submit
-                </Button>
+                </LoadingButton>
             </DialogActions>
         </Dialog>
     )

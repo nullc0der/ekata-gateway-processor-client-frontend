@@ -82,6 +82,7 @@ const Projects = () => {
         paymentSignatureSecret: '',
     })
     const [fetchingProjects, setFetchingProjects] = useState(false)
+    const [deletingProject, setDeletingProject] = useState(false)
     const selectedProject = find(projects, (x) => x.id === selectedProjectID)
     const { trackPageView } = useMatomo()
     const theme = useTheme()
@@ -129,7 +130,9 @@ const Projects = () => {
 
     const handleDeleteProject = () => {
         if (selectedProject) {
+            setDeletingProject(true)
             deleteProject(selectedProject.id).then((response) => {
+                setDeletingProject(false)
                 if (response.ok) {
                     setSelectedProjectID('')
                     dispatch(deleteProjectAction(selectedProject.id))
@@ -146,6 +149,12 @@ const Projects = () => {
 
     const onClickGetNewApiKey = () => {
         if (selectedProject) {
+            dispatch(
+                updateSnackBar({
+                    severity: 'success',
+                    message: 'Generating new API key',
+                })
+            )
             getNewApiKey(selectedProject.id).then((response) => {
                 if (response.ok && response.data) {
                     setApiKey({
@@ -159,6 +168,12 @@ const Projects = () => {
 
     const onClickGetNewPaymentSignatureSecret = () => {
         if (selectedProject) {
+            dispatch(
+                updateSnackBar({
+                    severity: 'success',
+                    message: 'Generating new payment signature secret',
+                })
+            )
             getNewPaymentSignatureSecret(selectedProject.id).then(
                 (response) => {
                     if (response.ok && response.data) {
@@ -218,6 +233,7 @@ const Projects = () => {
                                 <Grid item xs={12} sm={7} md={8}>
                                     <ProjectDetails
                                         selectedProject={selectedProject}
+                                        deletingProject={deletingProject}
                                         onClickUpdate={() =>
                                             openProjectForm('update')
                                         }

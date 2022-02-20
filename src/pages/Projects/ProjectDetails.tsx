@@ -15,6 +15,7 @@ import {
     Menu,
     MenuItem,
 } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 import { format } from 'date-fns'
 
 import { ProjectData } from 'store/projectsSlice'
@@ -24,6 +25,7 @@ import HelpTooltip from 'components/HelpTooltip'
 
 interface ProjectDetailsProps {
     selectedProject?: ProjectData
+    deletingProject: boolean
     onClickUpdate: () => void
     handleDeleteProject: () => void
     onClickNewApiKey: () => void
@@ -33,12 +35,14 @@ interface ProjectDetailsProps {
 
 interface DeleteProjectDialogProps {
     open: boolean
+    deletingProject: boolean
     toggleDeleteDialog: () => void
     deleteProject: () => void
 }
 
 const DeleteProjectDialog = ({
     open,
+    deletingProject,
     toggleDeleteDialog,
     deleteProject,
 }: DeleteProjectDialogProps) => {
@@ -54,13 +58,15 @@ const DeleteProjectDialog = ({
                 <Button variant="outlined" onClick={toggleDeleteDialog}>
                     Cancel
                 </Button>
-                <Button
+                <LoadingButton
                     variant="outlined"
+                    loading={deletingProject}
                     color="error"
+                    loadingPosition="end"
                     onClick={deleteProject}
-                    startIcon={<Icon>delete</Icon>}>
+                    endIcon={<Icon>delete</Icon>}>
                     Delete
-                </Button>
+                </LoadingButton>
             </DialogActions>
         </Dialog>
     )
@@ -68,6 +74,7 @@ const DeleteProjectDialog = ({
 
 const ProjectDetails = ({
     selectedProject,
+    deletingProject,
     onClickUpdate,
     handleDeleteProject,
     onClickNewApiKey,
@@ -238,6 +245,7 @@ const ProjectDetails = ({
             </Box>
             <DeleteProjectDialog
                 open={showDeleteProjectDialog}
+                deletingProject={deletingProject}
                 toggleDeleteDialog={toggleDeleteDialog}
                 deleteProject={onClickDelete}
             />
@@ -245,10 +253,18 @@ const ProjectDetails = ({
                 anchorEl={actionMenuAnchorEl}
                 open={actionMenuOpen}
                 onClose={hideActionMenu}>
-                <MenuItem onClick={onClickNewApiKey}>
+                <MenuItem
+                    onClick={() => {
+                        hideActionMenu()
+                        onClickNewApiKey()
+                    }}>
                     Request new api key
                 </MenuItem>
-                <MenuItem onClick={onClickNewPaymentSignatureSecret}>
+                <MenuItem
+                    onClick={() => {
+                        hideActionMenu()
+                        onClickNewPaymentSignatureSecret()
+                    }}>
                     Request new payment signature secret
                 </MenuItem>
             </Menu>
