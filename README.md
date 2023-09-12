@@ -26,3 +26,7 @@ One can easily integrate it to their website/application and start accepting cry
 
 -   Typescript
 -   React
+
+### Screencast
+
+-   Head over to [screencast](/screencast) for the client frontend's screencast
